@@ -65,6 +65,16 @@ internal class ClevelandCustomBlocksController @Inject constructor(
 
     @Suppress("UnstableApiUsage")
     fun give(sender: CommandSender, target: String, itemId: String, amount: Int) {
+        if (target.startsWith("@")) {
+            val matches = org.bukkit.Bukkit.selectEntities(sender, target).filterIsInstance<Player>()
+            if (matches.isEmpty()) {
+                sender.sendMessage(Msg.Common.playerNotFound(target))
+                return
+            }
+            matches.forEach { player -> give(sender, player.name, itemId, amount) }
+            return
+        }
+
         val targetPlayer = plugin.server.getPlayer(target) ?: return run {
             sender.sendMessage(Msg.Common.playerNotFound(target))
         }
@@ -73,10 +83,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
             val customBlockDefinition: CustomBlockDefinition = run {
                 val result = getCustomBlockDefinitionByIdUseCase(itemId)
                 when (result) {
-                    is GetCustomBlockDefinitionByIdUseCase.Result.Success -> {
-                        result.customBlock
-                    }
-
+                    is GetCustomBlockDefinitionByIdUseCase.Result.Success -> result.customBlock
                     is GetCustomBlockDefinitionByIdUseCase.Result.Failure.NotFound -> {
                         sender.sendMessage(Msg.Give.definitionNotFound(itemId))
                         return@launch
@@ -84,15 +91,11 @@ internal class ClevelandCustomBlocksController @Inject constructor(
                 }
             }
 
-            val originalMaterial = Material.getMaterial(customBlockDefinition.originalBlock) ?: run {
-                sender.sendMessage(Msg.Give.invalidDefinition(itemId)) /* Since the Repository also calls `getMaterial`,
-                this message should never be fired except when a bit is flipped by cosmic ray */
-                return@launch
-            }
+            val originalMaterial = Material.getMaterial(customBlockDefinition.originalBlock)
+                ?: return@launch sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 
-            val givenItem = ItemStack(originalMaterial, amount).also {
+            val baseItem = ItemStack(originalMaterial, 1).also {
                 it.editMeta { itemMeta ->
-
                     itemMeta.itemName(Component.text(customBlockDefinition.displayName))
 
                     val customModelDataComponent = itemMeta.customModelDataComponent
@@ -107,8 +110,24 @@ internal class ClevelandCustomBlocksController @Inject constructor(
                 }
             }
 
-            targetPlayer.give(givenItem)
-            targetPlayer.sendMessage(Msg.Give.gave(target, itemId, amount))
+            val maxPerStack = minOf(64, baseItem.maxStackSize)
+            if (amount <= 0) {
+                sender.sendMessage(Msg.Give.gave(target, itemId, 0))
+                return@launch
+            }
+
+            val fullStacks = amount / maxPerStack
+            val remainder = amount % maxPerStack
+
+            val items = List(fullStacks) { baseItem.asQuantity(maxPerStack) } +
+                    listOfNotNull(remainder.takeIf { it > 0 }?.let(baseItem::asQuantity))
+
+            when (items.size) {
+                1 -> targetPlayer.give(items[0])
+                else -> targetPlayer.give(items)
+            }
+
+            sender.sendMessage(Msg.Give.gave(target, itemId, amount))
         }
     }
 

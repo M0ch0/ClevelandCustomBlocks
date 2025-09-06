@@ -14,6 +14,10 @@ internal object Msg {
         )
     }
 
+    object Command {
+        fun playerOnlyCommand() = Component.translatable(MsgKey.Command.ONLY_PLAYER)
+    }
+
     object Reload {
 
         fun starting() = Component.translatable(MsgKey.Reload.STARTING)
@@ -21,12 +25,14 @@ internal object Msg {
             Component.translatable(MsgKey.Reload.RESULT, Component.text(changed))
 
         fun resultWithWarn(changed: Int, warn: Int) =
-            result(changed).append {
-                Component.translatable(MsgKey.Reload.RESULT_WARN, Component.text(warn))
-            }
+            result(changed)
+                .append(Component.translatable(MsgKey.Reload.RESULT_WARN, Component.text(warn)))
     }
 
     object Give {
+
+        fun invalidAmount() =
+            Component.translatable(MsgKey.Give.INVALID_AMOUNT)
 
         fun definitionNotFound(itemId: String) =
             Component.translatable(MsgKey.Give.BLOCK_NOT_FOUND, Component.text(itemId))

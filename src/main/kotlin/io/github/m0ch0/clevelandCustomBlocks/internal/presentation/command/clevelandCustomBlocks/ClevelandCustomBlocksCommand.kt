@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Name
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import javax.inject.Inject
@@ -31,14 +32,18 @@ internal class ClevelandCustomBlocksCommand @Inject constructor(
         @Name("itemId") itemId: String,
         @Name("amount") @Optional @Default("1") amount: Int
     ) {
+        if (amount !in 1..2304) {
+            sender.sendMessage(Msg.Give.invalidAmount())
+            return
+        }
         clevelandCustomBlocksController.give(sender, target, itemId, amount)
     }
 
     @Subcommand("get-chunk-blocks")
     fun onGetChunkBlocks(sender: CommandSender) {
         if (sender !is Player) {
-            sender.sendMessage("TODO_ONLY_PLAYER_CAN_RUN_COMMAND")
-        return
+            sender.sendMessage(Msg.Command.playerOnlyCommand())
+            return
         }
         clevelandCustomBlocksController.getChunkBlocks(sender)
     }

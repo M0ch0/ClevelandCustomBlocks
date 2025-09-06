@@ -21,7 +21,7 @@ internal object MsgKey {
     }
 
     object Give {
-
+        const val INVALID_AMOUNT = "clevelandcustomblocks.give.invalid_amount"
         const val BLOCK_NOT_FOUND = "clevelandcustomblocks.give.block_not_found" // {0}=itemId
         const val INVALID_DEFINITION = "clevelandcustomblocks.give.invalid_definition" // {0}=itemId
         const val GAVE = "clevelandcustomblocks.give.gave"

@@ -1,0 +1,3 @@
+JDK = 17
+GRADLE = 8.14.3
+TARGET = JDK 21

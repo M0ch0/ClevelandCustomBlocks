@@ -7,6 +7,7 @@ detekt = "1.23.8"
 kotlinx-coroutines = "1.10.2"
 
 paper-api = "1.21.8-R0.1-SNAPSHOT"
+paperweight-userdev = "2.0.0-SNAPSHOT"
 acf = "0.5.1-SNAPSHOT"
 dagger = "2.57"
 
@@ -34,5 +35,6 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight-userdev"}
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

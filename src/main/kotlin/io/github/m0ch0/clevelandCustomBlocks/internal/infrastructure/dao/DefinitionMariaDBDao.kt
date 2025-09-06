@@ -1,6 +1,5 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao
 
-class DefinitionMariaDBDao {
-
-    // TODO
-}
+@Deprecated("Not implemented yet")
+class DefinitionMariaDBDao
+// TODO

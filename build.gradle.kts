@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.shadow)
     alias(libs.plugins.run.paper)
+    alias(libs.plugins.paperweight.userdev)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
 }
@@ -38,6 +39,7 @@ dependencies {
     implementation(libs.acf.paper)
     implementation(libs.mccoroutine.bukkit.api)
     implementation(libs.mccoroutine.bukkit.core)
+    paperweight.paperDevBundle(libs.versions.paper.api.get())
 
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
