@@ -15,7 +15,7 @@ blocks:
 
   advanced_workbench:
     displayName: "Advanced Workbench"
-    originalBlock: WORKBENCH
+    originalBlock: STRIPPED_OAK_LOG
     # action
     #   - as: server
     #     run: "/exactcraft forceopen $clicker"

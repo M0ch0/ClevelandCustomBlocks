@@ -95,7 +95,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
             when (items.size) {
                 1 -> targetPlayer.give(items[0])
                 else -> targetPlayer.give(items)
-            }
+            } // Thanks latest paper api!
 
             sender.sendMessage(Msg.Give.gave(target, itemId, amount))
         }
