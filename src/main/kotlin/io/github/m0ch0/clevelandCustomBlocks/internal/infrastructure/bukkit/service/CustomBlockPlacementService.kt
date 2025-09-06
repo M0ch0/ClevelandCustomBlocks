@@ -50,6 +50,11 @@ internal class CustomBlockPlacementService @Inject constructor(
             location.blockZ
         )
 
+        /*
+            The intention of not returning even if addIfMissing is false:
+             a no-op user can clean up accidental orphans by simply replace and breaking block.
+         */
+
         location.block.type = CollisionBlock.material
 
         val display = location.world.spawnEntity(

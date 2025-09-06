@@ -3,6 +3,7 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.command.clev
 import com.github.shynixn.mccoroutine.bukkit.launch
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.LoadCustomBlockDefinitionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
@@ -18,6 +19,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
     private val chunkIndexStore: ChunkIndexStore,
     private val loadCustomBlockDefinitionsUseCase: LoadCustomBlockDefinitionsUseCase,
+    private val getCustomBlockDefinitionsUseCase: GetCustomBlockDefinitionByIdUseCase
 ) {
 
     fun reload(sender: CommandSender) {
@@ -72,6 +74,11 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         }
 
         plugin.launch {
+            if (getCustomBlockDefinitionsUseCase(itemId) !is GetCustomBlockDefinitionByIdUseCase.Result.Success) {
+                sender.sendMessage(Msg.Give.definitionNotFound(itemId))
+                return@launch
+            }
+
             val baseItem = customBlocksService.createBaseItem(itemId)
                 ?: return@launch sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 

@@ -26,6 +26,7 @@ internal class BlockController @Inject constructor(
         hand: EquipmentSlot,
         targetLocation: Location,
     ) {
+        if (!customBlocksService.isCustomItem(itemInHand)) return
         plugin.launch {
             customBlocksService.placeFromItem(player, hand, targetLocation, itemInHand)
         }

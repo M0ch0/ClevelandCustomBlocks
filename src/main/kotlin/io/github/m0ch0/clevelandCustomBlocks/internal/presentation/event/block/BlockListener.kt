@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import javax.inject.Inject
 
 internal class BlockListener @Inject constructor(
-    private val blockController: BlockController,
+    private val blockController: BlockController
 ) : Listener {
 
     @Suppress("ReturnCount")
