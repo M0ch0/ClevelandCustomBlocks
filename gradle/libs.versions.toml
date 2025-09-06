@@ -1,0 +1,38 @@
+[versions]
+kotlin = "2.1.20"
+ksp = "2.1.20-1.0.32"
+shadow = "8.3.0"
+run-paper = "2.3.1"
+detekt = "1.23.8"
+kotlinx-coroutines = "1.10.2"
+
+paper-api = "1.21.8-R0.1-SNAPSHOT"
+acf = "0.5.1-SNAPSHOT"
+dagger = "2.57"
+
+mccoroutine-bukkit-api = "2.22.0"
+mccoroutine-bukkit-core = "2.22.0"
+
+[libraries]
+paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
+acf-paper = { group = "co.aikar", name = "acf-paper", version.ref = "acf" }
+mccoroutine-bukkit-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-api", version.ref = "mccoroutine-bukkit-api"}
+mccoroutine-bukkit-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutine-bukkit-core"}
+
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
+
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

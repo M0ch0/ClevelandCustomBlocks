@@ -1,0 +1,5 @@
+packName: clevelandcustomblocks
+blocks:
+  brick:
+    displayName: "Brick"
+    originalBlock: STONE

@@ -1,0 +1,14 @@
+formatting:
+  active: true
+  Indentation:
+    active: false
+  excludes:
+    - '.*/build/.*'
+    - '.*/generated/.*'
+build:
+  maxIssues: 999 # Ignore issues go brrrr (for test. When merging from dev to main, make sure 0 issue)
+processors:
+  active: true
+config:
+  validation: true
+

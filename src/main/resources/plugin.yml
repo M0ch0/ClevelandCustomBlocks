@@ -1,0 +1,11 @@
+name: ClevelandCustomBlocks
+version: '${version}'
+main: io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
+api-version: '1.21'
+prefix: "ClevelandCustomBlocks"
+authors: [ M0ch0 ]
+website: https://m0ch0.github.io/
+permissions:
+  clevelandcustomblocks.use:
+    description: Use ClevelandCustomBlock commands
+    default: op

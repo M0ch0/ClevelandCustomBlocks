@@ -1,0 +1,3 @@
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
+
+internal class CustomBlockPlacementService
