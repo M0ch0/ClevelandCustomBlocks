@@ -28,6 +28,10 @@ internal class BlockListener @Inject constructor(
             meta.persistentDataContainer.get(customBlockIdKey, PersistentDataType.STRING) ?: return
 
         // val cancel: CancelHandle = CancelHandle(event::setCancelled)
+        /*
+          Why not cancel this event? Because canceling the event will cause the server to revert the state of the Block,
+          which means that the Block.type changed in this business logic will also be reverted.
+         */
         val targetLocation = event.blockReplacedState.location
         blockController.onCustomBlockPlace(
             player = event.player,

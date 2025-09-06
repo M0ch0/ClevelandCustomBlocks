@@ -59,5 +59,6 @@ internal class AdventureI18nBootstrap @Inject constructor() : StartupTask, Shutd
     }
 
     override fun shutdown() {
+        GlobalTranslator.translator().removeSource(translator)
     }
 }
