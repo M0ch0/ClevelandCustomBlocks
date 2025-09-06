@@ -1,10 +1,10 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.block
 
 import com.github.shynixn.mccoroutine.bukkit.launch
+import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.CustomBlockLinkFinder
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.CustomBlockPlacementService
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 internal class BlockController @Inject constructor(
     private val plugin: ClevelandCustomBlocks,
-    private val placementService: CustomBlockPlacementService,
+    private val customBlocksService: ClevelandCustomBlocksService,
     private val customBlockLinkFinder: CustomBlockLinkFinder,
     private val chunkIndexStore: ChunkIndexStore,
 ) {
@@ -25,10 +25,9 @@ internal class BlockController @Inject constructor(
         itemInHand: ItemStack,
         hand: EquipmentSlot,
         targetLocation: Location,
-        customBlockId: String,
     ) {
         plugin.launch {
-            placementService.place(player, hand, targetLocation, itemInHand, customBlockId)
+            customBlocksService.placeFromItem(player, hand, targetLocation, itemInHand)
         }
     }
 

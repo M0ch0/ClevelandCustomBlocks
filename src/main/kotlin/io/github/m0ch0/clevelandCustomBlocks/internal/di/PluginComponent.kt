@@ -20,7 +20,7 @@ internal interface PluginComponent {
 
     fun startupTasks(): Set<StartupTask>
 
-    fun shutdownTask(): Set<ShutdownTask>
+    fun shutdownTasks(): Set<ShutdownTask>
 
     @Component.Builder
     interface Builder {

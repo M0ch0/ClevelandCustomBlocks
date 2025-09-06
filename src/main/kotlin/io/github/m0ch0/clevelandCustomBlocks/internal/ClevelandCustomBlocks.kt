@@ -52,7 +52,7 @@ internal class ClevelandCustomBlocks : JavaPlugin() {
     }
 
     override fun onDisable() {
-        pluginComponent.shutdownTask().forEach { it.shutdown() }
+        pluginComponent.shutdownTasks().forEach { it.shutdown() }
         logger.info("bye")
     }
 

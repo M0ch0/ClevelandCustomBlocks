@@ -97,7 +97,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         val blockRegistry = chunkIndexStore.list(chunk)
         if (blockRegistry.isEmpty()) {
             player.sendMessage(Msg.Chunk.emptyRegistry())
-        return
+            return
         }
 
         var validBlockCount = 0
@@ -122,6 +122,11 @@ internal class ClevelandCustomBlocksController @Inject constructor(
     }
 
     fun cleanupChunkBlocks(player: Player) {
+        /*
+        val chunk = player.chunk
+        val itemDisplays = chunk.entities.filterIsInstance<>().filter(it.persistentDataContainer.has(~~~))
+        val registeredBlocks = chunkIndexStore.~~~
+         */
         player.sendMessage("TODO_NOT_IMPLEMENTED_YET")
     }
 }

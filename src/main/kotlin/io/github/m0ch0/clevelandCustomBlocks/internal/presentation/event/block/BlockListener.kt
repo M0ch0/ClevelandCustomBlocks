@@ -1,19 +1,15 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.block
 
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
-import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.persistence.PersistentDataType
 import javax.inject.Inject
-import javax.inject.Named
 
 internal class BlockListener @Inject constructor(
     private val blockController: BlockController,
-    @Named("custom_block_id_key") private val customBlockIdKey: NamespacedKey
 ) : Listener {
 
     @Suppress("ReturnCount")
@@ -22,10 +18,7 @@ internal class BlockListener @Inject constructor(
         if (event.canBuild().not()) { return }
 
         val item = event.itemInHand
-        val meta = item.itemMeta ?: return
-
-        val customBlockId: String =
-            meta.persistentDataContainer.get(customBlockIdKey, PersistentDataType.STRING) ?: return
+        if (item.itemMeta == null) return
 
         // val cancel: CancelHandle = CancelHandle(event::setCancelled)
         /*
@@ -37,8 +30,7 @@ internal class BlockListener @Inject constructor(
             player = event.player,
             itemInHand = event.itemInHand.clone(),
             hand = event.hand,
-            targetLocation = targetLocation,
-            customBlockId = customBlockId,
+            targetLocation = targetLocation
         )
     }
 
