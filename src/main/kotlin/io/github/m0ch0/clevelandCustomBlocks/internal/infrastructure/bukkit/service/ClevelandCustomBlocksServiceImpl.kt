@@ -2,6 +2,7 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.ser
 
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import net.kyori.adventure.text.Component
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -71,14 +72,18 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
     override fun removeAt(block: Block, dropItem: Boolean): Boolean {
         val linked = linkFinder.findItemDisplayByBlock(block) ?: return false
 
-        if (dropItem) {
-            val stack = linked.itemStack
-            block.world.dropItem(block.location, stack)
-        }
+        if (dropItem) block.world.dropItem(block.location, linked.itemStack)
 
-        block.type = Material.AIR
+        if (block.type == CollisionBlock.material) block.type = Material.AIR
+
         linked.remove()
         return chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
+    }
+
+    override fun forceRemoveAt(block: Block) {
+        linkFinder.findItemDisplayByBlock(block)?.remove()
+        if (block.type == CollisionBlock.material) block.type = Material.AIR
+        chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
     }
 
     override fun linkedDisplayOf(block: Block): ItemDisplay? = linkFinder.findItemDisplayByBlock(block)

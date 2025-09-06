@@ -58,6 +58,9 @@ internal object Msg {
 
         fun invalidSummary(count: Int) =
             Component.translatable(MsgKey.Chunk.INVALID_SUMMARY, Component.text(count))
+
+        fun cleanup(count: Int) =
+            Component.translatable(MsgKey.Chunk.CLEANUP, Component.text(count))
     }
 
     object Action {

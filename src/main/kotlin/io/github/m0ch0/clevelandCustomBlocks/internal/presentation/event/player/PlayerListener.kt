@@ -27,6 +27,7 @@ internal class PlayerListener @Inject constructor(
     @Suppress("ReturnCount")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerUseBarrierEvent(event: PlayerInteractEvent) {
+        if (event.player.isSneaking) return
         if (event.hand == EquipmentSlot.OFF_HAND) return
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return

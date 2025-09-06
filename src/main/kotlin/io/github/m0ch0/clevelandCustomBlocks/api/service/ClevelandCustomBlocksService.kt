@@ -27,6 +27,8 @@ interface ClevelandCustomBlocksService {
 
     fun removeAt(block: Block, dropItem: Boolean = true): Boolean
 
+    fun forceRemoveAt(block: Block)
+
     fun linkedDisplayOf(block: Block): ItemDisplay?
 
     fun linkedBlockOf(display: ItemDisplay): Block?

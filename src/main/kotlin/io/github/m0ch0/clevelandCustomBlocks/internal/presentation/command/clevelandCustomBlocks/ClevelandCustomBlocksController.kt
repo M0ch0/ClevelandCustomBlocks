@@ -131,11 +131,17 @@ internal class ClevelandCustomBlocksController @Inject constructor(
     }
 
     fun cleanupChunkBlocks(player: Player) {
-        /*
         val chunk = player.chunk
-        val itemDisplays = chunk.entities.filterIsInstance<>().filter(it.persistentDataContainer.has(~~~))
-        val registeredBlocks = chunkIndexStore.~~~
-         */
-        player.sendMessage("TODO_NOT_IMPLEMENTED_YET")
+        val blockRegistry = chunkIndexStore.list(chunk)
+
+        for (registeredBlock in blockRegistry) {
+            val block = chunk.getBlock(
+                registeredBlock.x,
+                registeredBlock.y,
+                registeredBlock.z
+            )
+            customBlocksService.forceRemoveAt(block)
+        }
+        player.sendMessage(Msg.Chunk.cleanup(blockRegistry.size))
     }
 }

@@ -31,6 +31,7 @@ internal object MsgKey {
         const val EMPTY_REGISTRY = "clevelandcustomblocks.chunk.empty_registry"
         const val VALID_SUMMARY = "clevelandcustomblocks.chunk.valid_summary" // {0}=count
         const val INVALID_SUMMARY = "clevelandcustomblocks.chunk.invalid_summary" // {0}=count
+        const val CLEANUP = "clevelandcustomblocks.chunk.cleanup"
     }
 
     object Action {
