@@ -82,6 +82,8 @@ internal class CustomBlockPlacementService @Inject constructor(
 
         if (player.gameMode != GameMode.CREATIVE) {
             decrementOneFromHand(player, hand)
+            // I don't know why, but Bukkit doesn't subtract items when change the block.type in a BlockPlaceEvent.
+            // So have to do it manually.
         }
         return true
     }
