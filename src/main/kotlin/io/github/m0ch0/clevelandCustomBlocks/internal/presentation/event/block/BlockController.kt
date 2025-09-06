@@ -4,7 +4,6 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.CustomBlockLinkFinder
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player

@@ -1,5 +1,22 @@
 packName: clevelandcustomblocks
 blocks:
-  brick:
-    displayName: "Brick"
+  steel:
+    displayName: "Steel"
     originalBlock: STONE
+    action:
+      - as: player
+        run: "/me $clicker right-clicked a CustomBlock!"
+      - as: server
+        run: "/execute at $clicker run playsound minecraft:block.anvil.place master @a ~ ~ ~"
+
+  cardboard:
+    displayName: "Cardboard Box"
+    originalBlock: STONE
+
+  advanced_workbench:
+    displayName: "Advanced Workbench"
+    originalBlock: WORKBENCH
+    # action
+    #   - as: server
+    #     run: "/exactcraft forceopen $clicker"
+    #

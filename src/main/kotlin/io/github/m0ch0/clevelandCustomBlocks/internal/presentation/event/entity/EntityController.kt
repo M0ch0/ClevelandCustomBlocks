@@ -12,11 +12,9 @@ internal class EntityController @Inject constructor(
 ) {
 
     fun onItemDisplayRemoved(itemDisplay: ItemDisplay) {
-
         val linkedCollisionBlock = customBlocksService.linkedBlockOf(itemDisplay) ?: return
 
         linkedCollisionBlock.type = Material.AIR
-
 
         chunkIndexStore.remove(
             linkedCollisionBlock.chunk,

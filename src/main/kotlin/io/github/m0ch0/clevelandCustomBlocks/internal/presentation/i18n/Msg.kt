@@ -59,4 +59,16 @@ internal object Msg {
         fun invalidSummary(count: Int) =
             Component.translatable(MsgKey.Chunk.INVALID_SUMMARY, Component.text(count))
     }
+
+    object Action {
+
+        fun invalidCommand() =
+            Component.translatable(MsgKey.Action.INVALID_COMMAND)
+
+        fun invalidCommandForOp() =
+            Component.translatable(MsgKey.Action.INVALID_COMMAND_FOR_OP)
+
+        fun invalidDefinition() =
+            Component.translatable(MsgKey.Action.INVALID_DEFINITION)
+    }
 }

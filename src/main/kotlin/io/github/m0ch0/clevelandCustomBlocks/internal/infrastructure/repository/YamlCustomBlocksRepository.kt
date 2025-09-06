@@ -1,5 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository
 
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockAction
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockDefinition
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockDefinitionsLoad
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.repository.CustomBlocksRepository
@@ -26,7 +27,6 @@ internal class YamlCustomBlocksRepository @Inject constructor(
 
     // toMap is there to prevent accidental aliasing in a mixed Java/Kotlin environment
     override suspend fun getAll(): Map<String, CustomBlockDefinition> = cachedAll.toMap()
-
     override suspend fun get(id: String): CustomBlockDefinition? = cachedAll[id]
 
     override suspend fun load(): CustomBlockDefinitionsLoad.Result = mutex.withLock {
@@ -71,20 +71,23 @@ internal class YamlCustomBlocksRepository @Inject constructor(
             val displayName = child.getNonBlankString("displayName")
             val originalBlock = child.getNonBlankString("originalBlock")
 
+            val (actions, actionsOk) = parseActions(child)
+
             val invalids = buildList {
-                if (displayName == null) {
-                    add("displayName")
-                }
-                if ((originalBlock == null) || org.bukkit.Material.getMaterial(originalBlock) == null) {
+                if (displayName == null) add("displayName")
+                val materialName = originalBlock
+                if (materialName == null || org.bukkit.Material.getMaterial(materialName) == null) {
                     add("originalBlock")
                 }
+                if (!actionsOk) add("action")
             }
 
             if (invalids.isEmpty()) {
                 result["$packName:$key"] = CustomBlockDefinition(
                     id = "$packName:$key",
                     displayName = requireNotNull(displayName),
-                    originalBlock = requireNotNull(originalBlock)
+                    originalBlock = requireNotNull(originalBlock),
+                    actions = actions
                 ) // The invalids.isEmpty() validates it's null-safe, even though the compiler doesn't recognize it.
             } else {
                 warnings += CustomBlockDefinitionsLoad.Warning(key = key, invalidFields = invalids)
@@ -92,6 +95,33 @@ internal class YamlCustomBlocksRepository @Inject constructor(
         }
 
         return result to warnings
+    }
+
+    private fun parseActions(section: ConfigurationSection): Pair<List<CustomBlockAction>, Boolean> {
+        val raw = section.getMapList("action")
+        if (raw.isEmpty()) return emptyList<CustomBlockAction>() to true
+
+        val parsed = mutableListOf<CustomBlockAction>()
+        var allValid = true
+
+        for (entry in raw) {
+            val asStr = (entry["as"] as? String)?.trim()?.lowercase()
+            val runStr = (entry["run"] as? String)?.trim()
+
+            val execAs = when (asStr) {
+                "player" -> CustomBlockAction.ExecuteAs.PLAYER
+                "server" -> CustomBlockAction.ExecuteAs.SERVER
+                else -> null
+            }
+
+            if (execAs == null || runStr.isNullOrEmpty()) {
+                allValid = false
+                continue
+            }
+            parsed += CustomBlockAction(execAs, runStr)
+        }
+
+        return parsed to allValid
     }
 
     private fun countChanges(

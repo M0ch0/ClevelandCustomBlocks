@@ -32,4 +32,10 @@ internal object MsgKey {
         const val VALID_SUMMARY = "clevelandcustomblocks.chunk.valid_summary" // {0}=count
         const val INVALID_SUMMARY = "clevelandcustomblocks.chunk.invalid_summary" // {0}=count
     }
+
+    object Action {
+        const val INVALID_COMMAND = "clevelandcustomblocks.action.invalid_command"
+        const val INVALID_COMMAND_FOR_OP = "clevelandcustomblocks.action.invalid_command_for_op"
+        const val INVALID_DEFINITION = "clevelandcustomblocks.action.invalid_definition"
+    }
 }
