@@ -1,5 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.world
 
+import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.CustomBlockLinkFinder
@@ -9,12 +10,12 @@ import org.bukkit.entity.ItemDisplay
 import javax.inject.Inject
 
 internal class WorldController @Inject constructor(
-    private val linkFinder: CustomBlockLinkFinder,
+    private val customBlocksService: ClevelandCustomBlocksService,
     private val chunkIndexStore: ChunkIndexStore
 ) {
 
     fun onItemDisplayLoad(itemDisplay: ItemDisplay) {
-        val linkedBlock = linkFinder.findBlockByItemDisplay(itemDisplay)
+        val linkedBlock = customBlocksService.linkedBlockOf(itemDisplay)
 
         if (linkedBlock == null) {
             itemDisplay.remove()
@@ -29,19 +30,29 @@ internal class WorldController @Inject constructor(
         val world = chunk.world
 
         for (packedPos in registeredPositions.toList()) {
-            val worldLoc = ChunkIndexStore.relativeToWorldLocation(chunk, packedPos)
-            val block = world.getBlockAt(worldLoc)
+            val worldLocation = ChunkIndexStore.relativeToWorldLocation(chunk, packedPos)
+            val block = world.getBlockAt(worldLocation)
 
             if (block.type != CollisionBlock.material) {
-                linkFinder.findItemDisplayByBlock(block)?.remove()
-                chunkIndexStore.remove(chunk, worldLoc.blockX, worldLoc.blockY, worldLoc.blockZ)
+                customBlocksService.linkedDisplayOf(block)?.remove()
+                chunkIndexStore.remove(
+                    chunk,
+                    worldLocation.blockX,
+                    worldLocation.blockY,
+                    worldLocation.blockZ
+                )
                 continue
             }
 
-            val display = linkFinder.findItemDisplayByBlock(block)
+            val display = customBlocksService.linkedDisplayOf(block)
             if (display == null) {
                 block.type = Material.AIR
-                chunkIndexStore.remove(chunk, worldLoc.blockX, worldLoc.blockY, worldLoc.blockZ)
+                chunkIndexStore.remove(
+                    chunk,
+                    worldLocation.blockX,
+                    worldLocation.blockY,
+                    worldLocation.blockZ
+                )
             }
         }
     }

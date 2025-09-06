@@ -15,7 +15,6 @@ import javax.inject.Inject
 internal class BlockController @Inject constructor(
     private val plugin: ClevelandCustomBlocks,
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val customBlockLinkFinder: CustomBlockLinkFinder,
     private val chunkIndexStore: ChunkIndexStore,
 ) {
 
@@ -40,7 +39,7 @@ internal class BlockController @Inject constructor(
             brokenBlock.z
         )
 
-        val linkedItemDisplay = customBlockLinkFinder.findItemDisplayByBlock(brokenBlock) ?: return
+        val linkedItemDisplay = customBlocksService.linkedDisplayOf(brokenBlock) ?: return
         linkedItemDisplay.remove()
     }
 }

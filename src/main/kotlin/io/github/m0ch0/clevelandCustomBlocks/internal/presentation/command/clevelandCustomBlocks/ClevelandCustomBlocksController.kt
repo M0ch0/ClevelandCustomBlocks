@@ -79,6 +79,8 @@ internal class ClevelandCustomBlocksController @Inject constructor(
                 return@launch
             }
 
+            // Someday createBaseItem will have a Result
+
             val baseItem = customBlocksService.createBaseItem(itemId)
                 ?: return@launch sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 
