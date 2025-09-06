@@ -39,12 +39,25 @@ internal class ClevelandCustomBlocksCommand @Inject constructor(
         clevelandCustomBlocksController.give(sender, target, itemId, amount)
     }
 
-    @Subcommand("get-chunk-blocks")
-    fun onGetChunkBlocks(sender: CommandSender) {
+    @Subcommand("chunk")
+    @Syntax("<operation>")
+    fun onGetChunkBlocks(
+        sender: CommandSender,
+        @Name("operation") operation: ChunkOperation
+    ) {
         if (sender !is Player) {
             sender.sendMessage(Msg.Command.playerOnlyCommand())
             return
         }
-        clevelandCustomBlocksController.getChunkBlocks(sender)
+
+        when (operation) {
+            ChunkOperation.GET -> clevelandCustomBlocksController.getChunkBlocks(sender)
+            ChunkOperation.CLEANUP -> clevelandCustomBlocksController.cleanupChunkBlocks(sender)
+        }
     }
+}
+
+enum class ChunkOperation {
+    GET,
+    CLEANUP
 }

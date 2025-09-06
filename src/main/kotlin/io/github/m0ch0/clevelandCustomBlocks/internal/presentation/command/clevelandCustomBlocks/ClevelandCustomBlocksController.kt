@@ -1,31 +1,23 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.command.clevelandCustomBlocks
 
 import com.github.shynixn.mccoroutine.bukkit.launch
+import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockDefinition
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.LoadCustomBlockDefinitionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import javax.inject.Inject
-import javax.inject.Named
 
 internal class ClevelandCustomBlocksController @Inject constructor(
     private val plugin: ClevelandCustomBlocks,
     private val logger: ComponentLogger,
+    private val customBlocksService: ClevelandCustomBlocksService,
     private val chunkIndexStore: ChunkIndexStore,
-    @Named("custom_block_id_key") private val customBlockIdKey: NamespacedKey,
     private val loadCustomBlockDefinitionsUseCase: LoadCustomBlockDefinitionsUseCase,
-    private val getCustomBlockDefinitionByIdUseCase: GetCustomBlockDefinitionByIdUseCase
 ) {
 
     fun reload(sender: CommandSender) {
@@ -63,7 +55,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         }
     }
 
-    @Suppress("UnstableApiUsage")
+    @Suppress("ReturnCount")
     fun give(sender: CommandSender, target: String, itemId: String, amount: Int) {
         if (target.startsWith("@")) {
             val matches = org.bukkit.Bukkit.selectEntities(sender, target).filterIsInstance<Player>()
@@ -80,41 +72,10 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         }
 
         plugin.launch {
-            val customBlockDefinition: CustomBlockDefinition = run {
-                val result = getCustomBlockDefinitionByIdUseCase(itemId)
-                when (result) {
-                    is GetCustomBlockDefinitionByIdUseCase.Result.Success -> result.customBlock
-                    is GetCustomBlockDefinitionByIdUseCase.Result.Failure.NotFound -> {
-                        sender.sendMessage(Msg.Give.definitionNotFound(itemId))
-                        return@launch
-                    }
-                }
-            }
-
-            val originalMaterial = Material.getMaterial(customBlockDefinition.originalBlock)
+            val baseItem = customBlocksService.createBaseItem(itemId)
                 ?: return@launch sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 
-            val baseItem = ItemStack(originalMaterial, 1).also {
-                it.editMeta { itemMeta ->
-                    itemMeta.itemName(Component.text(customBlockDefinition.displayName))
-
-                    val customModelDataComponent = itemMeta.customModelDataComponent
-                    customModelDataComponent.strings = listOf(customBlockDefinition.id)
-                    itemMeta.setCustomModelDataComponent(customModelDataComponent)
-
-                    itemMeta.persistentDataContainer.set(
-                        customBlockIdKey,
-                        PersistentDataType.STRING,
-                        customBlockDefinition.id
-                    )
-                }
-            }
-
             val maxPerStack = minOf(64, baseItem.maxStackSize)
-            if (amount <= 0) {
-                sender.sendMessage(Msg.Give.gave(target, itemId, 0))
-                return@launch
-            }
 
             val fullStacks = amount / maxPerStack
             val remainder = amount % maxPerStack
@@ -158,5 +119,9 @@ internal class ClevelandCustomBlocksController @Inject constructor(
 
         player.sendMessage(Msg.Chunk.validSummary(validBlockCount))
         player.sendMessage(Msg.Chunk.invalidSummary(invalidBlockCount))
+    }
+
+    fun cleanupChunkBlocks(player: Player) {
+        player.sendMessage("TODO_NOT_IMPLEMENTED_YET")
     }
 }

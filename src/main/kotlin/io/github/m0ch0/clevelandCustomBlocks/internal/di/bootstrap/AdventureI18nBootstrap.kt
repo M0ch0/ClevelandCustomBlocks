@@ -1,7 +1,6 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n
+package io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap
 
-import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.ShutdownTask
-import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.StartupTask
+import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.MsgKey
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage

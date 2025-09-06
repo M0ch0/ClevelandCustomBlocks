@@ -1,8 +1,10 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.di
 import dagger.Module
 import dagger.Provides
+import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.repository.CustomBlocksRepository
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ClevelandCustomBlocksServiceImpl
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao.DefinitionYamlDao
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository.YamlCustomBlocksRepository
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
@@ -46,4 +48,8 @@ internal object PluginModule {
     @Singleton
     fun provideCustomBlocksRepository(dao: DefinitionYamlDao): CustomBlocksRepository =
         YamlCustomBlocksRepository(dao)
+
+    @Provides
+    @Singleton
+    fun provideClevelandCustomBlocksService(impl: ClevelandCustomBlocksServiceImpl): ClevelandCustomBlocksService = impl
 }
