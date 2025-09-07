@@ -154,8 +154,8 @@ Finally, ship/distribute the pack to clients (via server resource pack or manual
     Examples:
 
     ```
-    /ccbs give Steve ccbs:steel
-    /ccbs give @a ccbs:cardboard 64
+    /ccbs give Steve ccbs:steel_block
+    /ccbs give @a ccbs:cardboard_box 64
     ```
 - **Admin utilities**
     ```
