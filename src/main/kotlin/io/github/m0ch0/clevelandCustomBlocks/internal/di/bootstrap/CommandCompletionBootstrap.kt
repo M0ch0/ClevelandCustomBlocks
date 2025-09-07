@@ -23,6 +23,7 @@ internal class CommandCompletionBootstrap @Inject constructor(
     }
 
     override fun shutdown() {
-        commandManager.commandCompletions.unregisterCompletion("ccb_ids")
+        // commandManager.commandCompletions.unregisterCompletion("ccb_ids")
+        // It seems there is no need to manually unregister (in fact, an error will be thrown if we do).
     }
 }
