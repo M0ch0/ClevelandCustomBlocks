@@ -101,7 +101,7 @@ internal class CustomBlockPlacementService @Inject constructor(
 
             Orientation.FACE -> {
                 val snappedYaw = snapYawToRightAngle(player.location.yaw)
-                display.setRotation(snappedYaw, 0f)
+                display.setRotation(snappedYaw + YAW_OFFSET_FACE, 0f)
             }
 
             Orientation.STAIRS_LIKE -> {
@@ -114,13 +114,13 @@ internal class CustomBlockPlacementService @Inject constructor(
                 display.setRotation(correctedYaw, 0f)
 
                 if (flip) {
-                    val t = display.transformation
-                    val flippedRoll = org.joml.Quaternionf(t.leftRotation).rotateZ(Math.PI.toFloat())
-                    display.transformation = org.bukkit.util.Transformation(
-                        t.translation,
+                    val transformation = display.transformation
+                    val flippedRoll = Quaternionf(transformation.leftRotation).rotateZ(Math.PI.toFloat())
+                    display.transformation = Transformation(
+                        transformation.translation,
                         flippedRoll,
-                        t.scale,
-                        t.rightRotation
+                        transformation.scale,
+                        transformation.rightRotation
                     )
                 }
             }
