@@ -26,29 +26,38 @@ All custom blocks live in `plugins/ClevelandCustomBlocks/define.yml`
 ```yaml
 packName: ccbs
 blocks:
-  steel:
-    displayName: "Steel"
-    originalBlock: STONE
-    action:
-      - as: player
-        run: "/me $clicker right-clicked a CustomBlock!"
-      - as: server
-        run: "/execute at $clicker run playsound minecraft:block.anvil.place master @a ~ ~ ~"
+  steel_block:
+    displayName: "Steel Block" #require, string
+    originalBlock: STONE #require, Bukkit.Material
+    orientation: NONE #optional, [NONE|FACE|STAIRS_LIKE]
 
-  cardboard:
+  steel_stairs:
+    displayName: "Steel Stairs"
+    originalBlock: STONE_STAIRS
+    orientation: STAIRS_LIKE
+
+  cardboard_box:
     displayName: "Cardboard Box"
     originalBlock: STONE
+    orientation: FACE
+    action: #optional
+      - as: player #require (If you set an action), [PLAYER|SERVER]
+        run: "/me $clicker right-clicked a CustomBlock!" #require (If you set an action), runnable command
+      - as: server
+        run: "/execute at $clicker run playsound minecraft:entity.cat.ambient master @a ~ ~ ~ 20"
 
-  advanced_workbench:
-    displayName: "Advanced Workbench"
-    originalBlock: STRIPPED_OAK_LOG
-    # action:
-    #   - as: server
-    #     run: "/exactcraft forceopen $clicker"
+  # advanced_workbench:
+  #   displayName: "Advanced Workbench"
+  #   originalBlock: STRIPPED_OAK_LOG
+  #   orientation: FACE # Orientation is Optional
+  #   action
+  #     - as: server
+  #       run: "/exactcraft forceopen $clicker"
+  #
 ```
 #### Fields
 - `packName` — your logical namespace for item models (e.g., `ccbs`).
-- `blocks.<key>` — the short id within the pack (full id becomes `packName:key`, e.g., `ccbs:steel`).
+- `blocks.<key>` — the short id within the pack (full id becomes `packName:key`, e.g., `ccbs:steel_block`).
 
     - `displayName` — the in-hand/in-inventory name users see.
     - `originalBlock` — the vanilla **block** id to base on (e.g., `STONE`, `STRIPPED_OAK_LOG`).
