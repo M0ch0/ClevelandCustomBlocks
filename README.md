@@ -248,7 +248,7 @@ The Adventure translator loads resource bundles from the **plugin classpath**. T
 3. Replace `messages_en_US.properties` / `messages_ja_JP.properties`, or add `messages_<your_LOCALE>.properties`.
 4. Save the JAR and restart the server.
 
-> ![IMPORTANT]
+> [!IMPORTANT]
 > **Keys** are stable and live in code under `MsgKey`. Keep placeholders (`<arg:0>`, etc.) intact.
 
 
