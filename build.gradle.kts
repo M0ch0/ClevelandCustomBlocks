@@ -24,6 +24,9 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots/") {
         name = "sonatype"
     }
+    maven("https://maven.enginehub.org/repo/") {
+        name = "enginehub"
+    }
 }
 
 kotlin {
@@ -40,6 +43,9 @@ dependencies {
     implementation(libs.mccoroutine.bukkit.api)
     implementation(libs.mccoroutine.bukkit.core)
     // paperweight.paperDevBundle(libs.versions.paper.api.get())
+
+    compileOnly(libs.worldguard.bukkit)
+    compileOnly(libs.worldedit.bukkit)
 
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)

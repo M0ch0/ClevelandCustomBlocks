@@ -3,6 +3,7 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockAction
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockDefinition
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockDefinitionsLoad
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.Orientation
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.repository.CustomBlocksRepository
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao.DefinitionYamlDao
 import io.github.m0ch0.clevelandCustomBlocks.internal.utils.getNonBlankString
@@ -73,6 +74,8 @@ internal class YamlCustomBlocksRepository @Inject constructor(
 
             val (actions, actionsOk) = parseActions(child)
 
+            val orientation = parseOrientation(child)
+
             val invalids = buildList {
                 if (displayName == null) add("displayName")
                 val materialName = originalBlock
@@ -87,7 +90,8 @@ internal class YamlCustomBlocksRepository @Inject constructor(
                     id = "$packName:$key",
                     displayName = requireNotNull(displayName),
                     originalBlock = requireNotNull(originalBlock),
-                    actions = actions
+                    actions = actions,
+                    orientation = orientation
                 ) // The invalids.isEmpty() validates it's null-safe, even though the compiler doesn't recognize it.
             } else {
                 warnings += CustomBlockDefinitionsLoad.Warning(key = key, invalidFields = invalids)
@@ -122,6 +126,21 @@ internal class YamlCustomBlocksRepository @Inject constructor(
         }
 
         return parsed to allValid
+    }
+
+    private fun parseOrientation(section: ConfigurationSection): Orientation {
+        val raw = (section.get("orientation") as? String)?.trim()
+            ?: return Orientation.NONE
+
+        // Accept common spellings: case-insensitive; allow hyphen/underscore
+        val norm = raw.lowercase()
+            .replace('-', '_')
+        return when (norm) {
+            "none" -> Orientation.NONE
+            "face" -> Orientation.FACE
+            "stairs_like" -> Orientation.STAIRS_LIKE
+            else -> Orientation.NONE // tolerant fallback
+        }
     }
 
     private fun countChanges(

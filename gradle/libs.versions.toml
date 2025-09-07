@@ -14,6 +14,9 @@ dagger = "2.57"
 mccoroutine-bukkit-api = "2.22.0"
 mccoroutine-bukkit-core = "2.22.0"
 
+worldguard = "7.0.14"
+worldedit-bukkit = "7.3.16"
+
 [libraries]
 paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
 acf-paper = { group = "co.aikar", name = "acf-paper", version.ref = "acf" }
@@ -29,6 +32,9 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
+worldguard-bukkit = { group = "com.sk89q.worldguard", name = "worldguard-bukkit", version.ref = "worldguard" }
+worldedit-bukkit  = { group = "com.sk89q.worldedit",  name = "worldedit-bukkit",  version.ref = "worldedit-bukkit" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

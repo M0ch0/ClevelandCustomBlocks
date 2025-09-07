@@ -3,6 +3,7 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.player
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ActionRunner
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.GameMode
@@ -15,10 +16,13 @@ internal class PlayerController @Inject constructor(
     private val logger: ComponentLogger,
     private val customBlocksService: ClevelandCustomBlocksService,
     private val actionRunner: ActionRunner,
+    private val breakProtection: BreakProtection,
     private val getCustomBlockDefinitionByIdUseCase: GetCustomBlockDefinitionByIdUseCase
 ) {
 
     fun onBarrierLeftClick(player: Player, clickedBlock: Block) {
+        if (breakProtection.canBreak(player, clickedBlock).not()) return
+
         if (player.gameMode == GameMode.CREATIVE) {
             customBlocksService.removeAt(clickedBlock, false)
         } else {
@@ -33,14 +37,13 @@ internal class PlayerController @Inject constructor(
         when (val result = getCustomBlockDefinitionByIdUseCase(id)) {
             is GetCustomBlockDefinitionByIdUseCase.Result.Success -> {
                 val actions = result.customBlock.actions
-                if (actions.isNotEmpty()) {
-                    try {
-                        actionRunner.runAll(player, actions)
-                    } catch (exception: CommandException) {
-                        logger.error(exception.toString())
-                        player.sendMessage(Msg.Action.invalidCommand())
-                        if (player.isOp) player.sendMessage(Msg.Action.invalidCommandForOp())
-                    }
+                if (actions.isEmpty()) return
+                try {
+                    actionRunner.runAll(player, actions)
+                } catch (exception: CommandException) {
+                    logger.error(exception.toString())
+                    player.sendMessage(Msg.Action.invalidCommand())
+                    if (player.isOp) player.sendMessage(Msg.Action.invalidCommandForOp())
                 }
             }
             is GetCustomBlockDefinitionByIdUseCase.Result.Failure.NotFound -> {

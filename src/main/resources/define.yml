@@ -1,21 +1,29 @@
 packName: ccbs
 blocks:
   steel:
-    displayName: "Steel"
-    originalBlock: STONE
-    action:
-      - as: player
-        run: "/me $clicker right-clicked a CustomBlock!"
+    displayName: "Steel" #require, string
+    originalBlock: STONE #require, Bukkit.Material
+    orientation: NONE #optional, [NONE|FACE|STAIRS_LIKE]
+    action: #optional
+      - as: player #require (If you set an action), [PLAYER|SERVER]
+        run: "/me $clicker right-clicked a CustomBlock!" #require (If you set an action), runnable command
       - as: server
         run: "/execute at $clicker run playsound minecraft:block.anvil.place master @a ~ ~ ~"
+
+  steel_stairs:
+    displayName: "Steel Stairs"
+    originalBlock: STONE_STAIRS
+    orientation: STAIRS_LIKE
 
   cardboard:
     displayName: "Cardboard Box"
     originalBlock: STONE
+    orientation: FACE
 
   advanced_workbench:
     displayName: "Advanced Workbench"
     originalBlock: STRIPPED_OAK_LOG
+    # orientation: FACE # Orientation is Optional
     # action
     #   - as: server
     #     run: "/exactcraft forceopen $clicker"

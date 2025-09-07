@@ -1,5 +1,5 @@
 ### Softdepend on WorldGuard:
-- Check permission for onPlayerInteractBarrierEvent as BlockBreakEvent
+- ~~Check permission for onPlayerInteractBarrierEvent as BlockBreakEvent~~ done
 
 ### Softdepend on WorldEdit:
 - Dealing with the barrier being destroyed by editing WorldEdit

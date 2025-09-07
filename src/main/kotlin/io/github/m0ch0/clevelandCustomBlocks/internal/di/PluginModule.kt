@@ -8,6 +8,9 @@ import io.github.m0ch0.clevelandCustomBlocks.internal.domain.repository.CustomBl
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ClevelandCustomBlocksServiceImpl
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao.DefinitionYamlDao
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository.YamlCustomBlocksRepository
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.NoopBreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.WorldGuardBreakProtection
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.NamespacedKey
 import javax.inject.Named
@@ -58,4 +61,12 @@ internal object PluginModule {
     @Provides
     @Singleton
     fun provideClevelandCustomBlocksService(impl: ClevelandCustomBlocksServiceImpl): ClevelandCustomBlocksService = impl
+
+    @Provides
+    @Singleton
+    fun provideBreakProtection(plugin: ClevelandCustomBlocks): BreakProtection {
+        val pluginManager = plugin.server.pluginManager
+        val hasWG = pluginManager.getPlugin("WorldGuard") != null
+        return if (hasWG) WorldGuardBreakProtection() else NoopBreakProtection()
+    }
 }

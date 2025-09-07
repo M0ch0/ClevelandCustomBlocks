@@ -1,5 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
 
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.Orientation
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import org.bukkit.GameMode
@@ -13,9 +14,13 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.Transformation
+import org.joml.Quaternionf
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlin.math.PI
+import kotlin.math.round
 
 @Singleton
 internal class CustomBlockPlacementService @Inject constructor(
@@ -80,12 +85,66 @@ internal class CustomBlockPlacementService @Inject constructor(
             )
         }
 
+        applyDisplayOrientation(display, player, def.orientation)
+
         if (player.gameMode != GameMode.CREATIVE) {
             decrementOneFromHand(player, hand)
             // I don't know why, but Bukkit doesn't subtract items when change the block.type in a BlockPlaceEvent.
             // So have to do it manually.
         }
         return true
+    }
+
+    private fun applyDisplayOrientation(display: ItemDisplay, player: Player, orientation: Orientation) {
+        when (orientation) {
+            Orientation.NONE -> return
+
+            Orientation.FACE -> {
+                val snappedYaw = snapYawToRightAngle(player.location.yaw)
+                display.setRotation(snappedYaw, 0f)
+            }
+
+            Orientation.STAIRS_LIKE -> {
+                val snappedYaw = snapYawToRightAngle(player.location.yaw)
+
+                val flip = if (player.eyeLocation.y < display.location.y) true else false
+
+                val offset = if (flip) YAW_OFFSET_FLIPPED else YAW_OFFSET_NO_FLIP
+                val correctedYaw = wrapYawDeg(snappedYaw + offset)
+                display.setRotation(correctedYaw, 0f)
+
+                if (flip) {
+                    val t = display.transformation
+                    val flippedRoll = org.joml.Quaternionf(t.leftRotation).rotateZ(Math.PI.toFloat())
+                    display.transformation = org.bukkit.util.Transformation(
+                        t.translation,
+                        flippedRoll,
+                        t.scale,
+                        t.rightRotation
+                    )
+                }
+            }
+        }
+    }
+
+    private fun snapYawToRightAngle(yaw: Float): Float {
+        val normalized = normalizeYawDeg(yaw)
+        val snapped = round(normalized / 90f) * 90f
+        return wrapYawDeg(snapped)
+    }
+
+    private fun normalizeYawDeg(yaw: Float): Float {
+        var y = yaw % 360f
+        if (y >= 180f) y -= 360f
+        if (y < -180f) y += 360f
+        return y
+    }
+
+    private fun wrapYawDeg(yaw: Float): Float {
+        var y = yaw % 360f
+        if (y <= -180f) y += 360f
+        if (y > 180f) y -= 360f
+        return y
     }
 
     private fun decrementOneFromHand(player: Player, hand: EquipmentSlot) {
@@ -103,5 +162,11 @@ internal class CustomBlockPlacementService @Inject constructor(
             }
             else -> Unit
         }
+    }
+
+    companion object {
+        private const val YAW_OFFSET_NO_FLIP: Float = -90f
+        private const val YAW_OFFSET_FLIPPED: Float = 90f
+        private const val YAW_OFFSET_FACE: Float = -90f
     }
 }

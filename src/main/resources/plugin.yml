@@ -5,6 +5,11 @@ api-version: '1.21'
 prefix: "ClevelandCustomBlocks"
 authors: [ M0ch0 ]
 website: https://m0ch0.github.io/
+
+softdepend:
+  - WorldGuard
+  - WorldEdit
+
 permissions:
   clevelandcustomblocks.use:
     description: Use ClevelandCustomBlock commands
