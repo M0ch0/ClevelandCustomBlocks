@@ -24,6 +24,7 @@ internal class BlockListener @Inject constructor(
         /*
           Why not cancel this event? Because canceling the event will cause the server to revert the state of the Block,
           which means that the Block.type changed in this business logic will also be reverted.
+          Also, changing the block type automatically disables placement, so item stacks are not reduced.
           So we need to manually decrement itemstack in the controller.
           (It may look like it's being double-consumed, but it's not.)
          */
