@@ -2,7 +2,8 @@
 A simple, lightweight, clean and robust custom block plugin
 <img width="854" height="480" alt="2025-09-07_13 50 23" src="https://github.com/user-attachments/assets/2ade2300-2624-48f6-b1e7-e89f27d41bed" />
 
-© 2025 M0ch0. Distributed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later). See LICENSE for details.
+Source code: AGPL-3.0-or-later (see LICENSE).
+Artwork & media: © 2025 M0ch0. All rights reserved. Not covered by the AGPL.
 
 ## For Normal Users
 
