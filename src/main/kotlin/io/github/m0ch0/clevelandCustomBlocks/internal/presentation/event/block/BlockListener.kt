@@ -24,6 +24,8 @@ internal class BlockListener @Inject constructor(
         /*
           Why not cancel this event? Because canceling the event will cause the server to revert the state of the Block,
           which means that the Block.type changed in this business logic will also be reverted.
+          So we need to manually decrement itemstack in the controller.
+          (It may look like it's being double-consumed, but it's not.)
          */
         val targetLocation = event.blockReplacedState.location
         blockController.onCustomBlockPlace(
