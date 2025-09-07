@@ -7,7 +7,7 @@ import javax.inject.Inject
 internal class GetCustomBlockDefinitionByIdUseCase @Inject constructor(
     private val customBlocksRepository: CustomBlocksRepository
 ) {
-    suspend operator fun invoke(id: String): Result {
+    operator fun invoke(id: String): Result {
         return customBlocksRepository.get(id)
             ?.let { Result.Success(it) }
             ?: Result.Failure.NotFound

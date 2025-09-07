@@ -1,8 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.block
 
-import com.github.shynixn.mccoroutine.bukkit.launch
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
-import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import org.bukkit.Location
 import org.bukkit.block.Block
@@ -12,7 +10,6 @@ import org.bukkit.inventory.ItemStack
 import javax.inject.Inject
 
 internal class BlockController @Inject constructor(
-    private val plugin: ClevelandCustomBlocks,
     private val customBlocksService: ClevelandCustomBlocksService,
     private val chunkIndexStore: ChunkIndexStore,
 ) {
@@ -25,9 +22,7 @@ internal class BlockController @Inject constructor(
         targetLocation: Location,
     ) {
         if (!customBlocksService.isCustomItem(itemInHand)) return
-        plugin.launch {
-            customBlocksService.placeFromItem(player, hand, targetLocation, itemInHand)
-        }
+        customBlocksService.placeFromItem(player, hand, targetLocation, itemInHand)
     }
 
     fun onBarrierBreak(brokenBlock: Block) {

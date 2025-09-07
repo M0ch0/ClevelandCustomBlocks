@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.AdventureI18nBootstrap
+import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.CommandCompletionBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.PublicApiBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.ShutdownTask
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.StartupTask
@@ -24,4 +25,10 @@ internal object BootstrapModule {
 
     @Provides @IntoSet
     fun provideApiShutdown(registrar: PublicApiBootstrap): ShutdownTask = registrar
+
+    @Provides @IntoSet
+    fun provideCommandCompletionStartup(completion: CommandCompletionBootstrap): StartupTask = completion
+
+    @Provides @IntoSet
+    fun provideCommandCompletionShutdown(completion: CommandCompletionBootstrap): ShutdownTask = completion
 }

@@ -10,15 +10,15 @@ import org.bukkit.inventory.ItemStack
 
 interface ClevelandCustomBlocksService {
 
-    suspend fun createItem(id: String, amount: Int = 1): ItemStack?
+    fun createItem(id: String, amount: Int = 1): ItemStack?
 
-    suspend fun createBaseItem(id: String): ItemStack?
+    fun createBaseItem(id: String): ItemStack?
 
     fun customIdOf(item: ItemStack?): String?
 
     fun isCustomItem(item: ItemStack?): Boolean = customIdOf(item) != null
 
-    suspend fun placeFromItem(
+    fun placeFromItem(
         player: Player,
         hand: EquipmentSlot,
         target: Location,

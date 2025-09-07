@@ -7,5 +7,5 @@ import javax.inject.Inject
 internal class GetAllCustomBlockDefinitionsUseCase @Inject constructor(
     private val repository: CustomBlocksRepository
 ) {
-    suspend operator fun invoke(): Map<String, CustomBlockDefinition> = repository.getAll()
+    operator fun invoke(): Map<String, CustomBlockDefinition> = repository.getAll()
 }

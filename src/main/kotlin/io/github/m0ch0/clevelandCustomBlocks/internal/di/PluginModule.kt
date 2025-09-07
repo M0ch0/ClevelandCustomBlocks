@@ -1,4 +1,5 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.di
+import co.aikar.commands.PaperCommandManager
 import dagger.Module
 import dagger.Provides
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
@@ -19,6 +20,11 @@ internal object PluginModule {
     @Singleton
     fun provideComponentLogger(plugin: ClevelandCustomBlocks): ComponentLogger =
         plugin.componentLogger
+
+    @Provides
+    @Singleton
+    fun provideCommandManager(plugin: ClevelandCustomBlocks): PaperCommandManager =
+        PaperCommandManager(plugin)
 
     @Provides
     @Singleton

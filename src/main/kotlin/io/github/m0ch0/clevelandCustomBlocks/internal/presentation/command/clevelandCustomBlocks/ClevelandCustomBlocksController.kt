@@ -73,32 +73,29 @@ internal class ClevelandCustomBlocksController @Inject constructor(
             sender.sendMessage(Msg.Common.playerNotFound(target))
         }
 
-        plugin.launch {
-            if (getCustomBlockDefinitionsUseCase(itemId) !is GetCustomBlockDefinitionByIdUseCase.Result.Success) {
-                sender.sendMessage(Msg.Give.definitionNotFound(itemId))
-                return@launch
-            }
-
-            // Someday createBaseItem will have a Result
-
-            val baseItem = customBlocksService.createBaseItem(itemId)
-                ?: return@launch sender.sendMessage(Msg.Give.invalidDefinition(itemId))
-
-            val maxPerStack = minOf(64, baseItem.maxStackSize)
-
-            val fullStacks = amount / maxPerStack
-            val remainder = amount % maxPerStack
-
-            val items = List(fullStacks) { baseItem.asQuantity(maxPerStack) } +
-                    listOfNotNull(remainder.takeIf { it > 0 }?.let(baseItem::asQuantity))
-
-            when (items.size) {
-                1 -> targetPlayer.give(items[0])
-                else -> targetPlayer.give(items)
-            } // Thanks latest paper api!
-
-            sender.sendMessage(Msg.Give.gave(target, itemId, amount))
+        if (getCustomBlockDefinitionsUseCase(itemId) !is GetCustomBlockDefinitionByIdUseCase.Result.Success) {
+            sender.sendMessage(Msg.Give.definitionNotFound(itemId))
+            return
         }
+
+        // Someday createBaseItem will have a Result
+
+        val baseItem = customBlocksService.createBaseItem(itemId)
+            ?: return sender.sendMessage(Msg.Give.invalidDefinition(itemId))
+
+        val maxPerStack = minOf(64, baseItem.maxStackSize)
+
+        val fullStacks = amount / maxPerStack
+        val remainder = amount % maxPerStack
+
+        val items = List(fullStacks) { baseItem.asQuantity(maxPerStack) } +
+                listOfNotNull(remainder.takeIf { it > 0 }?.let(baseItem::asQuantity))
+
+        when (items.size) {
+            1 -> targetPlayer.give(items[0])
+            else -> targetPlayer.give(items)
+        } // Thanks latest paper api!
+        sender.sendMessage(Msg.Give.gave(target, itemId, amount))
     }
 
     fun getChunkBlocks(player: Player) {

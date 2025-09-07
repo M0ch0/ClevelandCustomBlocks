@@ -18,7 +18,7 @@ internal class EntityListener @Inject constructor(
         when (event.cause) {
             Cause.DEATH, Cause.PLUGIN -> {
                 entityController.onItemDisplayRemoved(entity)
-            }
+            } // ItemDisplay doesn't die permanently otherwise, so 2 causes is fine.
             else -> return
         }
     }

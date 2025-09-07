@@ -26,8 +26,8 @@ internal class YamlCustomBlocksRepository @Inject constructor(
     private val mutex = Mutex()
 
     // toMap is there to prevent accidental aliasing in a mixed Java/Kotlin environment
-    override suspend fun getAll(): Map<String, CustomBlockDefinition> = cachedAll.toMap()
-    override suspend fun get(id: String): CustomBlockDefinition? = cachedAll[id]
+    override fun getAll(): Map<String, CustomBlockDefinition> = cachedAll.toMap()
+    override fun get(id: String): CustomBlockDefinition? = cachedAll[id]
 
     override suspend fun load(): CustomBlockDefinitionsLoad.Result = mutex.withLock {
         val config: FileConfiguration = withContext(Dispatchers.IO) {

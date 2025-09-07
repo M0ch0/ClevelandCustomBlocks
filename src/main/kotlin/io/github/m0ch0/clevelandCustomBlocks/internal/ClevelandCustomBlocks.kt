@@ -32,6 +32,9 @@ internal class ClevelandCustomBlocks : JavaPlugin() {
     lateinit var worldListener: WorldListener
 
     @Inject
+    lateinit var commandManager: PaperCommandManager
+
+    @Inject
     lateinit var clevelandCustomBlocksCommand: ClevelandCustomBlocksCommand
 
     override fun onEnable() {
@@ -39,6 +42,8 @@ internal class ClevelandCustomBlocks : JavaPlugin() {
             .plugin(this)
             .build()
         pluginComponent.inject(this)
+
+        // Later, we will also send registerEvents and registerCommands to bootstrap.
 
         server.pluginManager.registerEvents(blockListener, this)
         server.pluginManager.registerEvents(playerListener, this)
@@ -57,7 +62,6 @@ internal class ClevelandCustomBlocks : JavaPlugin() {
     }
 
     private fun registerCommands() {
-        val commandManager = PaperCommandManager(this)
         commandManager.registerCommand(clevelandCustomBlocksCommand)
     }
 }

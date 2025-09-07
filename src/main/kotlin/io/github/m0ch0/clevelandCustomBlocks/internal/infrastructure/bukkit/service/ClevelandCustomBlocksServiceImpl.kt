@@ -28,7 +28,7 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
 ) : ClevelandCustomBlocksService {
 
     @Suppress("UnstableApiUsage", "ReturnCount")
-    override suspend fun createBaseItem(id: String): ItemStack? {
+    override fun createBaseItem(id: String): ItemStack? {
         val result = getCustomBlockDefinitionById(id)
         val definition = (result as? GetCustomBlockDefinitionByIdUseCase.Result.Success)?.customBlock ?: return null
 
@@ -48,7 +48,7 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun createItem(id: String, amount: Int): ItemStack? {
+    override fun createItem(id: String, amount: Int): ItemStack? {
         val base = createBaseItem(id) ?: return null
         val quantity = amount.coerceIn(1, base.maxStackSize)
         return base.asQuantity(quantity)
@@ -59,7 +59,7 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
         return meta.persistentDataContainer.get(customBlockIdKey, PersistentDataType.STRING)
     }
 
-    override suspend fun placeFromItem(
+    override fun placeFromItem(
         player: Player,
         hand: EquipmentSlot,
         target: Location,

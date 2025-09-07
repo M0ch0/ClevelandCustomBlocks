@@ -26,7 +26,7 @@ internal class CustomBlockPlacementService @Inject constructor(
 ) {
 
     @Suppress("ReturnCount")
-    suspend fun place(
+    fun place(
         player: Player,
         hand: EquipmentSlot,
         targetLocation: Location,

@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import javax.inject.Inject
 
-@CommandAlias("clevelandcustomblocks|clevecb")
+@CommandAlias("clevelandcustomblocks|ccbs")
 @CommandPermission("clevelandcustomblocks.use")
 internal class ClevelandCustomBlocksCommand @Inject constructor(
     private val clevelandCustomBlocksController: ClevelandCustomBlocksController
@@ -25,7 +25,7 @@ internal class ClevelandCustomBlocksCommand @Inject constructor(
 
     @Subcommand("give")
     @Syntax("<player> <itemId> [amount]")
-    @CommandCompletion("@players")
+    @CommandCompletion("@players @ccb_ids")
     fun onGive(
         sender: CommandSender,
         @Name("target") target: String,
