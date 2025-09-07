@@ -167,6 +167,6 @@ internal class CustomBlockPlacementService @Inject constructor(
     companion object {
         private const val YAW_OFFSET_NO_FLIP: Float = -90f
         private const val YAW_OFFSET_FLIPPED: Float = 90f
-        private const val YAW_OFFSET_FACE: Float = -90f
+        private const val YAW_OFFSET_FACE: Float = -180f
     }
 }
