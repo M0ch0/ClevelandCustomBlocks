@@ -7,3 +7,6 @@ internal interface StartupTask {
 internal interface ShutdownTask {
     fun shutdown()
 }
+
+enum class Phase { FRAMEWORK, ADAPTERS, INTEGRATIONS, READY }
+// RESERVED FOR THE FUTURE
