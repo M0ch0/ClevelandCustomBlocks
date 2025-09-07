@@ -1,7 +1,10 @@
 # ClevelandCustomBlocks
 A simple, lightweight, clean and robust custom block plugin
+<img width="854" height="480" alt="2025-09-07_13 50 23" src="https://github.com/user-attachments/assets/2ade2300-2624-48f6-b1e7-e89f27d41bed" />
+
 
 ## For Normal Users
+
 ### Introduction
 - Compatible with Paper 1.21.4 and later.
 - Built with Kotlin/JDK 21
