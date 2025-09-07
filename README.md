@@ -12,7 +12,7 @@ Artwork & media: © 2025 M0ch0. All rights reserved. Not covered by the AGPL.
 - Built with Kotlin/JDK 21
 
 ### How to Install
-1. Download / build the plugin JAR (named `ClevelandCustomBlocks-<version>.jar`).
+1. [Download](https://github.com/M0ch0/ClevelandCustomBlocks/releases) / build the plugin JAR (named `ClevelandCustomBlocks-<version>.jar`).
 2. Drop it into your server’s plugins/ folder.
 3. Start the server once. The plugin will create its data folder and copy a default define.yml into:
    `plugins/ClevelandCustomBlocks/define.yml`
