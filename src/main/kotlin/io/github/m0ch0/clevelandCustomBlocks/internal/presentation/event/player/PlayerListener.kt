@@ -13,7 +13,6 @@ internal class PlayerListener @Inject constructor(
     private val playerController: PlayerController
 ) : Listener {
 
-    @Suppress("ReturnCount")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerInteractBarrierEvent(event: PlayerInteractEvent) {
         if (event.hand == EquipmentSlot.OFF_HAND) return
@@ -24,7 +23,6 @@ internal class PlayerListener @Inject constructor(
         playerController.onBarrierLeftClick(event.player, block)
     }
 
-    @Suppress("ReturnCount")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onPlayerUseBarrierEvent(event: PlayerInteractEvent) {
         if (event.player.isSneaking) return

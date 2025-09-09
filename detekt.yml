@@ -11,4 +11,7 @@ processors:
   active: true
 config:
   validation: true
-
+style:
+  ReturnCount:
+    active: true
+    max: 8

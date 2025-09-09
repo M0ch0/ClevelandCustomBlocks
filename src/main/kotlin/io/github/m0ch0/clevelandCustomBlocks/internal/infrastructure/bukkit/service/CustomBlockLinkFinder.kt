@@ -27,7 +27,6 @@ internal class CustomBlockLinkFinder @Inject constructor(
     it's acceptable to pay development cost in exchange for performance.
      */
 
-    @Suppress("ReturnCount")
     fun findItemDisplayByBlock(block: Block): ItemDisplay? {
         val world = block.world
         val x = block.x
@@ -56,7 +55,6 @@ internal class CustomBlockLinkFinder @Inject constructor(
             }
     }
 
-    @Suppress("ReturnCount")
     fun findBlockByItemDisplay(itemDisplay: ItemDisplay): Block? {
         val worldUuidStr = itemDisplay.persistentDataContainer
             .get(linkWorldUuidKey, PersistentDataType.STRING) ?: return null

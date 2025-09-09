@@ -16,9 +16,9 @@ blocks:
     orientation: FACE
     action: #optional
       - as: player #require (If you set an action), [PLAYER|SERVER]
-        run: "/me $clicker right-clicked a CustomBlock!" #require (If you set an action), runnable command
+        run: "/me right-clicked a CustomBlock!" #require (If you set an action), runnable command
       - as: server
-        run: "/execute at $clicker run playsound minecraft:entity.cat.ambient master @a ~ ~ ~ 20"
+        run: "/execute at $clicker run playsound minecraft:entity.cat.ambient master @a $x $y $z 5"
 
   # advanced_workbench:
   #   displayName: "Advanced Workbench"

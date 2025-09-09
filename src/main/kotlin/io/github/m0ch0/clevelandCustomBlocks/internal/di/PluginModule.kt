@@ -9,8 +9,11 @@ import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.serv
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao.DefinitionYamlDao
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository.YamlCustomBlocksRepository
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.InteractProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.NoopBreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.NoopInteractProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.WorldGuardBreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.WorldGuardInteractProtection
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.NamespacedKey
 import javax.inject.Named
@@ -68,5 +71,13 @@ internal object PluginModule {
         val pluginManager = plugin.server.pluginManager
         val hasWG = pluginManager.getPlugin("WorldGuard") != null
         return if (hasWG) WorldGuardBreakProtection() else NoopBreakProtection()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInteractProtection(plugin: ClevelandCustomBlocks): InteractProtection {
+        val pluginManager = plugin.server.pluginManager
+        val hasWG = pluginManager.getPlugin("WorldGuard") != null
+        return if (hasWG) WorldGuardInteractProtection() else NoopInteractProtection()
     }
 }

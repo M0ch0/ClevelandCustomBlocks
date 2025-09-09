@@ -30,7 +30,6 @@ internal class CustomBlockPlacementService @Inject constructor(
     @Named("link_block_xyz_key") private val linkBlockXYZKey: NamespacedKey,
 ) {
 
-    @Suppress("ReturnCount")
     fun place(
         player: Player,
         hand: EquipmentSlot,
@@ -107,7 +106,7 @@ internal class CustomBlockPlacementService @Inject constructor(
             Orientation.STAIRS_LIKE -> {
                 val snappedYaw = snapYawToRightAngle(player.location.yaw)
 
-                val flip = if (player.eyeLocation.y < display.location.y) true else false
+                val flip = player.eyeLocation.y < display.location.y
 
                 val offset = if (flip) YAW_OFFSET_FLIPPED else YAW_OFFSET_NO_FLIP
                 val correctedYaw = wrapYawDeg(snappedYaw + offset)
@@ -115,7 +114,7 @@ internal class CustomBlockPlacementService @Inject constructor(
 
                 if (flip) {
                     val transformation = display.transformation
-                    val flippedRoll = Quaternionf(transformation.leftRotation).rotateZ(Math.PI.toFloat())
+                    val flippedRoll = Quaternionf(transformation.leftRotation).rotateZ(PI.toFloat())
                     display.transformation = Transformation(
                         transformation.translation,
                         flippedRoll,
@@ -129,21 +128,21 @@ internal class CustomBlockPlacementService @Inject constructor(
 
     private fun snapYawToRightAngle(yaw: Float): Float {
         val normalized = normalizeYawDeg(yaw)
-        val snapped = round(normalized / 90f) * 90f
+        val snapped = round(normalized / RIGHT_ANGLE_DEG) * RIGHT_ANGLE_DEG
         return wrapYawDeg(snapped)
     }
 
     private fun normalizeYawDeg(yaw: Float): Float {
-        var y = yaw % 360f
-        if (y >= 180f) y -= 360f
-        if (y < -180f) y += 360f
+        var y = yaw % FULL_ROTATION_DEG
+        if (y >= HALF_ROTATION_DEG) y -= FULL_ROTATION_DEG
+        if (y < -HALF_ROTATION_DEG) y += FULL_ROTATION_DEG
         return y
     }
 
     private fun wrapYawDeg(yaw: Float): Float {
-        var y = yaw % 360f
-        if (y <= -180f) y += 360f
-        if (y > 180f) y -= 360f
+        var y = yaw % FULL_ROTATION_DEG
+        if (y <= -HALF_ROTATION_DEG) y += FULL_ROTATION_DEG
+        if (y > HALF_ROTATION_DEG) y -= FULL_ROTATION_DEG
         return y
     }
 
@@ -168,5 +167,9 @@ internal class CustomBlockPlacementService @Inject constructor(
         private const val YAW_OFFSET_NO_FLIP: Float = -90f
         private const val YAW_OFFSET_FLIPPED: Float = 90f
         private const val YAW_OFFSET_FACE: Float = -180f
+
+        private const val RIGHT_ANGLE_DEG: Float = 90f
+        private const val HALF_ROTATION_DEG: Float = 180f
+        private const val FULL_ROTATION_DEG: Float = 360f
     }
 }

@@ -4,6 +4,7 @@ import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksSe
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ActionRunner
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.InteractProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.GameMode
@@ -17,11 +18,12 @@ internal class PlayerController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
     private val actionRunner: ActionRunner,
     private val breakProtection: BreakProtection,
+    private val interactProtection: InteractProtection,
     private val getCustomBlockDefinitionByIdUseCase: GetCustomBlockDefinitionByIdUseCase
 ) {
 
     fun onBarrierLeftClick(player: Player, clickedBlock: Block) {
-        if (breakProtection.canBreak(player, clickedBlock).not()) return
+        if (runCatching { breakProtection.canBreak(player, clickedBlock) }.getOrNull() != true) return
 
         if (player.gameMode == GameMode.CREATIVE) {
             customBlocksService.removeAt(clickedBlock, false)
@@ -31,6 +33,8 @@ internal class PlayerController @Inject constructor(
     }
 
     fun onBarrierRightClick(player: Player, clickedBlock: Block) {
+        if (runCatching { interactProtection.canInteract(player, clickedBlock) }.getOrNull() != true) return
+
         val display = customBlocksService.linkedDisplayOf(clickedBlock) ?: return
         val id = customBlocksService.customIdOf(display.itemStack) ?: return
 
@@ -39,7 +43,7 @@ internal class PlayerController @Inject constructor(
                 val actions = result.customBlock.actions
                 if (actions.isEmpty()) return
                 try {
-                    actionRunner.runAll(player, actions)
+                    actionRunner.runAll(player, clickedBlock, actions)
                 } catch (exception: CommandException) {
                     logger.error(exception.toString())
                     player.sendMessage(Msg.Action.invalidCommand())

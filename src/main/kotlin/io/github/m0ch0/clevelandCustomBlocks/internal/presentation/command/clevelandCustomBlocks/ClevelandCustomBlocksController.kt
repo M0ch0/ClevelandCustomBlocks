@@ -57,7 +57,6 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     fun give(sender: CommandSender, target: String, itemId: String, amount: Int) {
         if (target.startsWith("@")) {
             val matches = org.bukkit.Bukkit.selectEntities(sender, target).filterIsInstance<Player>()
@@ -83,7 +82,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
         val baseItem = customBlocksService.createBaseItem(itemId)
             ?: return sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 
-        val maxPerStack = minOf(64, baseItem.maxStackSize)
+        val maxPerStack = baseItem.maxStackSize
 
         val fullStacks = amount / maxPerStack
         val remainder = amount % maxPerStack

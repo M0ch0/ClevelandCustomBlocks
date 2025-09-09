@@ -1,6 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
 
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.PackedRelativePos
+import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.PackedRelativePos
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -23,21 +23,20 @@ internal class ChunkIndexStore @Inject constructor(
     it's acceptable to pay development cost in exchange for performance.
      */
 
-    @Suppress("ReturnCount")
     fun list(chunk: Chunk): MutableSet<PackedRelativePos> {
         val bytes: ByteArray = chunk.persistentDataContainer.get(chunkBlockIndexKey, BYTE_ARRAY_DATA_TYPE)
             ?: return mutableSetOf()
 
         if (bytes.isEmpty()) return mutableSetOf()
 
-        val positions = LinkedHashSet<PackedRelativePos>(bytes.size / 3)
+        val positions = LinkedHashSet<PackedRelativePos>(bytes.size / BYTES_PER_POSITION)
         var index = 0
-        while (index + 2 < bytes.size) {
+        while (index + BYTES_PER_POSITION - 1 < bytes.size) {
             val decoded = decodePosition(bytes, index)
             if (decoded != null) {
                 positions += decoded
             }
-            index += 3
+            index += BYTES_PER_POSITION
         }
         return positions
     }
@@ -91,11 +90,11 @@ internal class ChunkIndexStore @Inject constructor(
             return
         }
 
-        val outputBytes = ByteArray(positions.size * 3)
+        val outputBytes = ByteArray(positions.size * BYTES_PER_POSITION)
         var writeIndex = 0
         for (position in positions) {
             encodePositionInto(position, outputBytes, writeIndex)
-            writeIndex += 3
+            writeIndex += BYTES_PER_POSITION
         }
         chunk.persistentDataContainer.set(chunkBlockIndexKey, BYTE_ARRAY_DATA_TYPE, outputBytes)
     }
@@ -103,15 +102,20 @@ internal class ChunkIndexStore @Inject constructor(
     companion object {
         private val BYTE_ARRAY_DATA_TYPE = PersistentDataType.BYTE_ARRAY
 
+        private const val BYTES_PER_POSITION = 3
+        private const val CHUNK_SHIFT = 4
+
         fun worldToRelativePosition(worldX: Int, worldY: Int, worldZ: Int, chunk: Chunk): PackedRelativePos? {
-            val relativeX = worldX - (chunk.x shl 4) // worldX - (shl 4 = 2^4 = *16 = origin of the chunk.) = exact loc.
-            val relativeZ = worldZ - (chunk.z shl 4)
+            // worldX - (shl CHUNK_SHIFT = 2^4 = *16 = origin of the chunk.) = exact location.
+            val relativeX = worldX - (chunk.x shl CHUNK_SHIFT)
+            val relativeZ = worldZ - (chunk.z shl CHUNK_SHIFT)
             return PackedRelativePos.of(relativeX, worldY, relativeZ)
         }
 
         fun relativeToWorldLocation(chunk: Chunk, pos: PackedRelativePos): Location {
-            val chunkOriginX = chunk.x shl 4 // shl 4 = 2^4 = *16 = origin of the chunk.
-            val chunkOriginZ = chunk.z shl 4
+            // shl CHUNK_SHIFT = 2^4 = *16 = origin of the chunk.
+            val chunkOriginX = chunk.x shl CHUNK_SHIFT
+            val chunkOriginZ = chunk.z shl CHUNK_SHIFT
 
             val worldX = chunkOriginX + pos.x
             val worldY = pos.y
@@ -123,11 +127,11 @@ internal class ChunkIndexStore @Inject constructor(
         private fun encodePositionInto(position: PackedRelativePos, destination: ByteArray, offset: Int) {
             val x = position.x
             val z = position.z
-            val yN = position.y + 64 // 0..383
+            val yN = position.y + PackedRelativePos.Y_OFFSET // 0..383
 
-            val packed = ((x and 0xF) shl 20) or
-                    ((z and 0xF) shl 16) or
-                    ((yN and 0x1FF) shl 7)
+            val packed = ((x and PackedRelativePos.X_MASK) shl PackedRelativePos.X_SHIFT) or
+                    ((z and PackedRelativePos.Z_MASK) shl PackedRelativePos.Z_SHIFT) or
+                    ((yN and PackedRelativePos.Y_MASK) shl PackedRelativePos.Y_SHIFT)
 
             destination[offset] = ((packed ushr 16) and 0xFF).toByte()
             destination[offset + 1] = ((packed ushr 8) and 0xFF).toByte()
@@ -141,10 +145,10 @@ internal class ChunkIndexStore @Inject constructor(
 
             val packed = (byte0 shl 16) or (byte1 shl 8) or byte2
 
-            val x = (packed ushr 20) and 0xF
-            val z = (packed ushr 16) and 0xF
-            val yNormalized = (packed ushr 7) and 0x1FF
-            val y = yNormalized - 64
+            val x = (packed ushr PackedRelativePos.X_SHIFT) and PackedRelativePos.X_MASK
+            val z = (packed ushr PackedRelativePos.Z_SHIFT) and PackedRelativePos.Z_MASK
+            val yNormalized = (packed ushr PackedRelativePos.Y_SHIFT) and PackedRelativePos.Y_MASK
+            val y = yNormalized - PackedRelativePos.Y_OFFSET
 
             return PackedRelativePos.of(x, y, z)
         }

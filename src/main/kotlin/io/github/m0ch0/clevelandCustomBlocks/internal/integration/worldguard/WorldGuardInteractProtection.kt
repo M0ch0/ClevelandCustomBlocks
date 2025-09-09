@@ -7,8 +7,8 @@ import com.sk89q.worldguard.protection.flags.Flags
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 
-internal class WorldGuardBreakProtection : BreakProtection {
-    override fun canBreak(player: Player, block: Block): Boolean {
+class WorldGuardInteractProtection : InteractProtection {
+    override fun canInteract(player: Player, block: Block): Boolean {
         val localPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
         val weWorld = BukkitAdapter.adapt(block.world)
 
@@ -19,6 +19,6 @@ internal class WorldGuardBreakProtection : BreakProtection {
         val query = WorldGuard.getInstance().platform.regionContainer.createQuery()
         val weLocation = BukkitAdapter.adapt(block.location)
 
-        return query.testState(weLocation, localPlayer, Flags.BLOCK_BREAK, Flags.BUILD)
+        return query.testState(weLocation, localPlayer, Flags.INTERACT)
     }
 }

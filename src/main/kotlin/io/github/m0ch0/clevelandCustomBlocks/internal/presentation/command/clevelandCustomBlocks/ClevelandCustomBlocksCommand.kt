@@ -32,7 +32,7 @@ internal class ClevelandCustomBlocksCommand @Inject constructor(
         @Name("itemId") itemId: String,
         @Name("amount") @Optional @Default("1") amount: Int
     ) {
-        if (amount !in 1..2304) {
+        if (amount !in MIN_GIVE_COUNT..MAX_GIVE_COUNT) {
             sender.sendMessage(Msg.Give.invalidAmount())
             return
         }
@@ -55,9 +55,15 @@ internal class ClevelandCustomBlocksCommand @Inject constructor(
             ChunkOperation.CLEANUP -> clevelandCustomBlocksController.cleanupChunkBlocks(sender)
         }
     }
-}
 
-enum class ChunkOperation {
-    GET,
-    CLEANUP
+    companion object {
+
+        private const val MIN_GIVE_COUNT = 0
+        private const val MAX_GIVE_COUNT = 2304
+
+        enum class ChunkOperation {
+            GET,
+            CLEANUP
+        }
+    }
 }

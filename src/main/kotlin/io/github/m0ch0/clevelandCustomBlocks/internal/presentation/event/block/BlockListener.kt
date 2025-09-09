@@ -12,7 +12,6 @@ internal class BlockListener @Inject constructor(
     private val blockController: BlockController
 ) : Listener {
 
-    @Suppress("ReturnCount")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onCustomBlockPlaceEvent(event: BlockPlaceEvent) {
         if (event.canBuild().not()) { return }
@@ -28,6 +27,7 @@ internal class BlockListener @Inject constructor(
           So we need to manually decrement itemstack in the controller.
           (It may look like it's being double-consumed, but it's not.)
          */
+
         val targetLocation = event.blockReplacedState.location
         blockController.onCustomBlockPlace(
             player = event.player,
@@ -37,7 +37,6 @@ internal class BlockListener @Inject constructor(
         )
     }
 
-    @Suppress("ReturnCount")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBarrierBreakEvent(event: BlockBreakEvent) {
         if (event.block.type != CollisionBlock.material) return
