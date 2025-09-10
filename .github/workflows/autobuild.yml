@@ -2,14 +2,13 @@ name: Build shaded JAR (main)
 
 on:
   push:
-    branches: [ "main" ]           # fires on merges to main (PR merge creates a push)
-  workflow_dispatch:                # allow manual runs
+    branches: [ "main" ]
+  workflow_dispatch:
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
-# We only need read access to the repo for checkout and artifacts.
 permissions:
   contents: read
 
@@ -17,7 +16,6 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     env:
-      # Mirror the repo script defaults so Gradle uses the same cache location.
       GRADLE_USER_HOME: /opt/gradle-home
       GRADLE_OPTS: -Dorg.gradle.daemon=false -Dkotlin.daemon.enabled=false -Dorg.gradle.jvmargs='-Xmx2g -XX:+UseParallelGC'
       LANG: en_US.UTF-8
@@ -27,28 +25,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0            # keep tags/metadata available if needed
+          fetch-depth: 0
 
-      - name: Provision JDK 21 + CI essentials (Ubuntu 24.04)
+      # Optional: keep using your repo script for system prep (locales, tools, cache dir)
+      - name: Provision system packages + Gradle cache dir
         env:
-          PREWARM_GRADLE: none      # we do a real build below, so skip prewarm here
+          PREWARM_GRADLE: none
         run: |
           sudo bash scripts/setup-provisioned-runner-ubuntu24.sh
 
-      - name: Cache Gradle (wrapper + caches)
-        uses: actions/cache@v4
+      - name: Setup Temurin 21
+        uses: actions/setup-java@v4
         with:
-          path: |
-            /opt/gradle-home/caches
-            /opt/gradle-home/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml', 'gradle.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          distribution: temurin
+          java-version: '21'
+          cache: 'gradle'
 
-      # Build runs 'check' (detekt via your tasks.check dependency) and produces the shadowJar.
+      - name: Sanity check Java
+        run: |
+          which java; java -version
+          which javac; javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
       - name: Build (shadowed JAR, detekt, no tests)
         run: |
-          ./gradlew --no-daemon --stacktrace build -x test
+          ./gradlew --stacktrace --no-daemon build -x test
 
       - name: List outputs (for debugging)
         if: always()
@@ -64,11 +65,16 @@ jobs:
             build/libs/*.jar
             !build/libs/*-sources.jar
             !build/libs/*-javadoc.jar
+          if-no-files-found: error
 
       - name: Summary
         if: always()
         run: |
           echo "## Build Artifacts" >> "$GITHUB_STEP_SUMMARY"
-          ls -lh build/libs >> "$GITHUB_STEP_SUMMARY"
+          if [ -d build/libs ]; then
+            ls -lh build/libs >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No build/libs directory (build failed)." >> "$GITHUB_STEP_SUMMARY"
+          fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Gradle cache dir: ${GRADLE_USER_HOME}" >> "$GITHUB_STEP_SUMMARY"
