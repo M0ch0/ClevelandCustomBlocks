@@ -17,3 +17,10 @@ gradlew, *.bat, .gitignore, .gitattributes, /gradle, *.md, LICENSE
 
 ### Replace magic-numbers
 - ~~Pushing a magic number into a companion object~~ basically done
+
+
+### Workflow
+- ~~CodeQL~~ done
+- ~~Integrate with OpenAI Codex for automated PR review~~ done
+- Auto Build
+- Use LLM to automate changelog creation

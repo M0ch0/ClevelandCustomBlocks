@@ -6,7 +6,7 @@ formatting:
     - '.*/build/.*'
     - '.*/generated/.*'
 build:
-  maxIssues: 999 # Ignore issues go brrrr (for test. When merging from dev to main, make sure 0 issue)
+  maxIssues: 0
 processors:
   active: true
 config:

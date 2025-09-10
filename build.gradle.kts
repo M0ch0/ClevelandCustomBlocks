@@ -52,6 +52,12 @@ dependencies {
     implementation(libs.javax.inject)
 
     detektPlugins(libs.detekt.formatting)
+
+
+    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
 
 tasks {
@@ -60,6 +66,10 @@ tasks {
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.21")
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
