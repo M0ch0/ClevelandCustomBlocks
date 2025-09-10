@@ -34,15 +34,27 @@ fi
 ### -------- Packages --------
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-# Headless JDK 21 + common build/util tools Gradle relies on.
+# 1) Install & configure system CA bundle first
+apt-get install -y --no-install-recommends ca-certificates
+update-ca-certificates -f || true
+# Ensure the java keystore directory exists before postinst runs
+install -d -m 0755 /etc/ssl/certs/java
+
+# 2) Now install JDK and the Java CA glue, plus the other tools
 apt-get install -y --no-install-recommends \
-  openjdk-21-jdk-headless \
-  git ca-certificates curl wget \
+  openjdk-21-jdk-headless ca-certificates-java \
+  git curl wget \
   unzip zip tar gzip bzip2 xz-utils \
   coreutils findutils bash \
   jq gnupg \
   tzdata locales \
   netbase
+
+# Make sure the java keystore actually got created; if not, force postinst
+dpkg --configure -a
+if [[ ! -s /etc/ssl/certs/java/cacerts ]]; then
+  /var/lib/dpkg/info/ca-certificates-java.postinst configure || true
+fi
 
 # Trim apt metadata (keeps images smaller)
 rm -rf /var/lib/apt/lists/*
