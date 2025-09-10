@@ -20,7 +20,7 @@ jobs:
       NEW_TAG: ${{ github.ref_name }}
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       CHANGELOG_PATH: CHANGELOG.md
-      INSTRUCT_PATH: instruct.txt
+      INSTRUCT_PATH: changelog_instruct.txt
 
       LLM_BASE_URL: https://integrate.api.nvidia.com/v1
       LLM_MODEL: qwen/qwen3-coder-480b-a35b-instruct
