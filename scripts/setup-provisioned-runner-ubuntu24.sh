@@ -131,12 +131,6 @@ case "${PREWARM_GRADLE}" in
   none|"")
     echo "Skipping Gradle prewarm."
     ;;
-  light)
-    echo "Prewarm(light): resolve configurations & detekt plugins…"
-    # Resolve project deps & detekt plugin without running tests
-    ./gradlew -g "${GRADLE_USER_HOME}" --no-daemon --stacktrace \
-      dependencies detektClasses || true
-    ;;
   build)
     echo "Prewarm(build): building project (-x test)…"
     ./gradlew -g "${GRADLE_USER_HOME}" --no-daemon --stacktrace \
