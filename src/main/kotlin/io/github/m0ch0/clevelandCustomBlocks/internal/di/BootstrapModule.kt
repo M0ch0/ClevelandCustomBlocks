@@ -8,6 +8,7 @@ import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.CommandComple
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.PublicApiBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.ShutdownTask
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.StartupTask
+import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.WorldEditIntegrationBootstrap
 
 @Module
 internal object BootstrapModule {
@@ -31,4 +32,10 @@ internal object BootstrapModule {
 
     @Provides @IntoSet
     fun provideCommandCompletionShutdown(completion: CommandCompletionBootstrap): ShutdownTask = completion
+
+    @Provides @IntoSet
+    fun provideWorldEditStartup(bootstrap: WorldEditIntegrationBootstrap): StartupTask = bootstrap
+
+    @Provides @IntoSet
+    fun provideWorldEditShutdown(bootstrap: WorldEditIntegrationBootstrap): ShutdownTask = bootstrap
 }
