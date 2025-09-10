@@ -10,7 +10,7 @@ gradlew, *.bat, .gitignore, .gitattributes, /gradle, *.md, LICENSE
 - ~~Check permission for onPlayerUseBarrierEvent as worldguard `interact` flag~~ done
 
 ### Softdepend on WorldEdit:
-- Dealing with the barrier being destroyed by editing WorldEdit
+- ~~Dealing with the barrier being destroyed by editing WorldEdit~~ done
 
 ### `/ccbs fill` command
 - It would be nice if player could place customblocks all at once with a command
