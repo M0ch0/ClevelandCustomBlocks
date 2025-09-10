@@ -9,7 +9,6 @@ from typing import List, Optional, Tuple
 
 # Uses the "OpenAI-compatible" SDK pointed at NVIDIA (or any compatible endpoint)
 from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 
 
 def run(cmd: List[str], cwd: Optional[str] = None, check: bool = True) -> str:
@@ -292,7 +291,7 @@ def main():
 
     client = OpenAI(base_url=args.base_url, api_key=args.api_key)
 
-    messages = ChatCompletionMessageParam[
+    messages = [
         {"role": "system", "content": system_instructions},
         {"role": "user", "content": user_context},
     ]
