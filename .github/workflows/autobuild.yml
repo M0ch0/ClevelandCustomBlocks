@@ -1,0 +1,74 @@
+name: Build shaded JAR (main)
+
+on:
+  push:
+    branches: [ "main" ]           # fires on merges to main (PR merge creates a push)
+  workflow_dispatch:                # allow manual runs
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+# We only need read access to the repo for checkout and artifacts.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      # Mirror the repo script defaults so Gradle uses the same cache location.
+      GRADLE_USER_HOME: /opt/gradle-home
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dkotlin.daemon.enabled=false -Dorg.gradle.jvmargs='-Xmx2g -XX:+UseParallelGC'
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # keep tags/metadata available if needed
+
+      - name: Provision JDK 21 + CI essentials (Ubuntu 24.04)
+        env:
+          PREWARM_GRADLE: none      # we do a real build below, so skip prewarm here
+        run: |
+          sudo bash scripts/setup-provisioned-runner-ubuntu24.sh
+
+      - name: Cache Gradle (wrapper + caches)
+        uses: actions/cache@v4
+        with:
+          path: |
+            /opt/gradle-home/caches
+            /opt/gradle-home/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml', 'gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Build runs 'check' (detekt via your tasks.check dependency) and produces the shadowJar.
+      - name: Build (shadowed JAR, detekt, no tests)
+        run: |
+          ./gradlew --no-daemon --stacktrace build -x test
+
+      - name: List outputs (for debugging)
+        if: always()
+        run: |
+          echo "Contents of build/libs:"
+          ls -lah build/libs || true
+
+      - name: Upload shaded JAR artifact(s)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClevelandCustomBlocks-${{ github.sha }}
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-javadoc.jar
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Build Artifacts" >> "$GITHUB_STEP_SUMMARY"
+          ls -lh build/libs >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Gradle cache dir: ${GRADLE_USER_HOME}" >> "$GITHUB_STEP_SUMMARY"
