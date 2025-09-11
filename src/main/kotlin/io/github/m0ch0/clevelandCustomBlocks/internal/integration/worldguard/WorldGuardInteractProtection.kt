@@ -4,10 +4,11 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.flags.Flags
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.InteractProtectionPort
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 
-class WorldGuardInteractProtection : InteractProtection {
+internal class WorldGuardInteractProtection : InteractProtectionPort {
     override fun canInteract(player: Player, block: Block): Boolean {
         val localPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
         val weWorld = BukkitAdapter.adapt(block.world)
@@ -21,4 +22,8 @@ class WorldGuardInteractProtection : InteractProtection {
 
         return query.testState(weLocation, localPlayer, Flags.INTERACT)
     }
+}
+
+internal class NoopInteractProtection : InteractProtectionPort {
+    override fun canInteract(player: Player, block: Block) = true
 }

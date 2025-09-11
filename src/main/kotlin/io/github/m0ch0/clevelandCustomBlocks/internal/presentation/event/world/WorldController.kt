@@ -1,26 +1,34 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.world
 
-import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.FindLinkedBlockUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.FindLinkedItemDisplayUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ForceRemoveCustomBlockAtUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.IsItemDisplayForCustomBlocksUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ListRegisteredPositionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import org.bukkit.Chunk
 import org.bukkit.entity.ItemDisplay
 import javax.inject.Inject
 
 internal class WorldController @Inject constructor(
-    private val customBlocksService: ClevelandCustomBlocksService,
+    private val findLinkedBlockUseCase: FindLinkedBlockUseCase,
+    private val findLinkedItemDisplayUseCase: FindLinkedItemDisplayUseCase,
+    private val listRegisteredPositionsUseCase: ListRegisteredPositionsUseCase,
+    private val isItemDisplayForCustomBlocksUseCase: IsItemDisplayForCustomBlocksUseCase,
+    private val forceRemoveCustomBlockAtUseCase: ForceRemoveCustomBlockAtUseCase,
 ) {
 
     fun onItemDisplayLoad(itemDisplay: ItemDisplay) {
-        val linkedBlock = customBlocksService.linkedBlockOf(itemDisplay)
+        val linkedBlock = findLinkedBlockUseCase(itemDisplay)
 
-        if (linkedBlock == null) {
+        if (linkedBlock == null && isItemDisplayForCustomBlocksUseCase(itemDisplay)) {
             itemDisplay.remove()
             return
         }
     }
 
     fun onChunkLoad(chunk: Chunk) {
-        val registeredPositions = customBlocksService.listRegisteredPositions(chunk)
+        val registeredPositions = listRegisteredPositionsUseCase(chunk)
         if (registeredPositions.isEmpty()) return
 
         val world = chunk.world
@@ -29,13 +37,13 @@ internal class WorldController @Inject constructor(
             val block = world.getBlockAt(location)
 
             if (block.type != CollisionBlock.material) {
-                customBlocksService.forceRemoveAt(block)
+                forceRemoveCustomBlockAtUseCase(block)
                 continue
             }
 
-            val display = customBlocksService.linkedDisplayOf(block)
+            val display = findLinkedItemDisplayUseCase(block)
             if (display == null) {
-                customBlocksService.forceRemoveAt(block)
+                forceRemoveCustomBlockAtUseCase(block)
             }
         }
     }

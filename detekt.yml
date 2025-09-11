@@ -15,3 +15,7 @@ style:
   ReturnCount:
     active: true
     max: 8
+complexity:
+  LongParameterList:
+    active: true
+    constructorThreshold: 14

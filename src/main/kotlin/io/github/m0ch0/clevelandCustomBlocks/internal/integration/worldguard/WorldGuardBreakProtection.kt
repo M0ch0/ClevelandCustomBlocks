@@ -4,10 +4,11 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.flags.Flags
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.BreakProtectionPort
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 
-internal class WorldGuardBreakProtection : BreakProtection {
+internal class WorldGuardBreakProtection : BreakProtectionPort {
     override fun canBreak(player: Player, block: Block): Boolean {
         val localPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
         val weWorld = BukkitAdapter.adapt(block.world)
@@ -21,4 +22,8 @@ internal class WorldGuardBreakProtection : BreakProtection {
 
         return query.testState(weLocation, localPlayer, Flags.BLOCK_BREAK, Flags.BUILD)
     }
+}
+
+internal class NoopBreakProtection : BreakProtectionPort {
+    override fun canBreak(player: Player, block: Block) = true
 }
