@@ -29,6 +29,8 @@ interface ClevelandCustomBlocksService {
 
     fun forceRemoveAt(block: Block)
 
+    fun forceRemoveBy(itemDisplay: ItemDisplay)
+
     fun linkedDisplayOf(block: Block): ItemDisplay?
 
     fun linkedBlockOf(display: ItemDisplay): Block?
