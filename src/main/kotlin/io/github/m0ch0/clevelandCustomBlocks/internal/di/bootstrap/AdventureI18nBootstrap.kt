@@ -19,7 +19,19 @@ import javax.inject.Singleton
 @Singleton
 internal class AdventureI18nBootstrap @Inject constructor() : StartupTask, ShutdownTask {
 
-    private val control = UTF8ResourceBundleControl.utf8ResourceBundleControl()
+    private val control: ResourceBundle.Control = run {
+        // Find the factory method that only exists in Adventure 4.24.0 and later
+        val clazz = UTF8ResourceBundleControl::class.java
+        val controlFromNewApi = runCatching {
+            val method = clazz.getDeclaredMethod("utf8ResourceBundleControl")
+            @Suppress("UNCHECKED_CAST")
+            method.invoke(null) as ResourceBundle.Control
+        }.getOrNull()
+
+        controlFromNewApi ?: // Older environments (pre-Paper 1.21.8) fall back to get()
+        @Suppress("DEPRECATION")
+        UTF8ResourceBundleControl.get()
+    }
     private val base = "io.github.m0ch0.clevelandCustomBlocks.i18n.messages"
     private val defaultLocale = Locale.US
 
