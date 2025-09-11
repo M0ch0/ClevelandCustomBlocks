@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 internal class WorldController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val chunkIndexStore: ChunkIndexStore
 ) {
 
     fun onItemDisplayLoad(itemDisplay: ItemDisplay) {
@@ -23,35 +22,22 @@ internal class WorldController @Inject constructor(
     }
 
     fun onChunkLoad(chunk: Chunk) {
-        val registeredPositions = chunkIndexStore.list(chunk)
+        val registeredPositions = customBlocksService.listRegisteredPositions(chunk)
         if (registeredPositions.isEmpty()) return
 
         val world = chunk.world
 
-        for (packedPos in registeredPositions.toList()) {
-            val worldLocation = ChunkIndexStore.relativeToWorldLocation(chunk, packedPos)
-            val block = world.getBlockAt(worldLocation)
+        for (location in registeredPositions.toList()) {
+            val block = world.getBlockAt(location)
 
             if (block.type != CollisionBlock.material) {
-                customBlocksService.linkedDisplayOf(block)?.remove()
-                chunkIndexStore.remove(
-                    chunk,
-                    worldLocation.blockX,
-                    worldLocation.blockY,
-                    worldLocation.blockZ
-                )
+                customBlocksService.forceRemoveAt(block)
                 continue
             }
 
             val display = customBlocksService.linkedDisplayOf(block)
             if (display == null) {
-                block.type = Material.AIR
-                chunkIndexStore.remove(
-                    chunk,
-                    worldLocation.blockX,
-                    worldLocation.blockY,
-                    worldLocation.blockZ
-                )
+                customBlocksService.forceRemoveAt(block)
             }
         }
     }

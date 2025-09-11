@@ -11,7 +11,6 @@ import javax.inject.Inject
 
 internal class BlockController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val chunkIndexStore: ChunkIndexStore,
 ) {
 
     @Suppress("LongParameterList")
@@ -26,14 +25,6 @@ internal class BlockController @Inject constructor(
     }
 
     fun onBarrierBreak(brokenBlock: Block) {
-        chunkIndexStore.remove(
-            brokenBlock.chunk,
-            brokenBlock.x,
-            brokenBlock.y,
-            brokenBlock.z
-        )
-
-        val linkedItemDisplay = customBlocksService.linkedDisplayOf(brokenBlock) ?: return
-        linkedItemDisplay.remove()
+        customBlocksService.forceRemoveAt(brokenBlock)
     }
 }

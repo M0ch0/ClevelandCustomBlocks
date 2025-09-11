@@ -8,19 +8,9 @@ import javax.inject.Inject
 
 internal class EntityController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val chunkIndexStore: ChunkIndexStore
 ) {
 
     fun onItemDisplayRemoved(itemDisplay: ItemDisplay) {
-        val linkedCollisionBlock = customBlocksService.linkedBlockOf(itemDisplay) ?: return
-
-        linkedCollisionBlock.type = Material.AIR
-
-        chunkIndexStore.remove(
-            linkedCollisionBlock.chunk,
-            linkedCollisionBlock.x,
-            linkedCollisionBlock.y,
-            linkedCollisionBlock.z
-        )
+        customBlocksService.forceRemoveBy(itemDisplay)
     }
 }
