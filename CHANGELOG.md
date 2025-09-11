@@ -1,5 +1,22 @@
 # Changelog
 
+## [v0.3.1] - 2025-09-11
+
+### Fixed
+- Fix hard dependency on Paper 1.21.8 in AdventureI18nBootstrap (#1)
+
+### Changed
+- Degrade Paper API build version in gradle/libs.versions.toml
+- Bump api-version in plugin.yml
+- Change GitHub workflows to use automated manual release method
+
+### Internal
+- Update gradle.properties version
+- Remove autobuild and generate-changelog workflows
+- Add manual-release workflow
+
+Thanks @M0ch0
+
 ## [v0.3.0] - 2025-09-10
 ### Added
 - Add WorldEdit integration bootstrap and event handling (PR #79fb820, #927ae18, #608598f)
