@@ -1,5 +1,30 @@
 # Changelog
 
+## [v1.0.0] - 2025-09-11
+### ⚠️ Breaking changes
+- Refactor internal architecture by removing god-class and restructuring core components (PR #3)
+- Remove legacy WorldGuard protection classes (`BreakProtection`, `InteractProtection`)
+
+### Added
+- Introduce port interfaces for application layer dependencies
+- Add use cases for custom block interactions, placement, removal, and queries
+- New adapter implementations for action running, chunk indexing, link querying, and placement
+
+### Changed
+- Rename and restructure several infrastructure adapters to align with hexagonal architecture
+- Update dependency injection module and service implementations
+- Refactor controller layers for events and commands
+
+### Removed
+- Legacy WorldGuard integration classes replaced with updated versions
+
+### Internal
+- Major refactor to ascend god-class logic into modular use cases and ports
+- Update version to 1.0.0 in gradle.properties
+- Adjust detekt configuration
+
+Thanks @M0ch0 for leading the architectural refactor (PR #3)
+
 ## [v0.3.2] - 2025-09-11
 ### Added
 - Add `forceRemoveBy` method to `ClevelandCustomBlocksService` API (#2)
