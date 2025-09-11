@@ -1,5 +1,22 @@
 # Changelog
 
+## [v0.3.2] - 2025-09-11
+### Added
+- Add `forceRemoveBy` method to `ClevelandCustomBlocksService` API (#2)
+
+### Changed
+- Refactor internal architecture for better consistency across controllers and Bukkit infrastructure (#2)
+- Improve dependency structure in event controllers (#2)
+
+### Fixed
+- Fix typo in README.md (#2)
+
+### Internal
+- Bump version in gradle.properties (#2)
+- Rename service classes to adaptors in Bukkit infrastructure for clearer architecture (#2)
+- Update MEMO.md to reflect completed automation tasks (#2)
+- Update CHANGELOG.md for v0.3.1 (chore)
+
 ## [v0.3.1] - 2025-09-11
 
 ### Fixed
