@@ -3,6 +3,9 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.ser
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.ChunkIndexStore
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockLinkFinder
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockPlacementAdaptor
 import net.kyori.adventure.text.Component
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -20,7 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
-    private val placement: CustomBlockPlacementService,
+    private val placement: CustomBlockPlacementAdaptor,
     private val linkFinder: CustomBlockLinkFinder,
     private val chunkIndexStore: ChunkIndexStore,
     private val getCustomBlockDefinitionById: GetCustomBlockDefinitionByIdUseCase,
@@ -84,6 +87,19 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
         linkFinder.findItemDisplayByBlock(block)?.remove()
         if (block.type == CollisionBlock.material) block.type = Material.AIR
         chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
+    }
+
+    override fun forceRemoveBy(itemDisplay: ItemDisplay) {
+        val linkedCollisionBlock = linkedBlockOf(itemDisplay) ?: return
+
+        linkedCollisionBlock.type = Material.AIR
+
+        chunkIndexStore.remove(
+            linkedCollisionBlock.chunk,
+            linkedCollisionBlock.x,
+            linkedCollisionBlock.y,
+            linkedCollisionBlock.z
+        )
     }
 
     override fun linkedDisplayOf(block: Block): ItemDisplay? = linkFinder.findItemDisplayByBlock(block)

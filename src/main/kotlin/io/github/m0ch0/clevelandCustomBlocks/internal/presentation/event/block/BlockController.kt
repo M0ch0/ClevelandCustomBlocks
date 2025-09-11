@@ -1,7 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.block
 
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -11,7 +10,6 @@ import javax.inject.Inject
 
 internal class BlockController @Inject constructor(
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val chunkIndexStore: ChunkIndexStore,
 ) {
 
     @Suppress("LongParameterList")
@@ -26,14 +24,6 @@ internal class BlockController @Inject constructor(
     }
 
     fun onBarrierBreak(brokenBlock: Block) {
-        chunkIndexStore.remove(
-            brokenBlock.chunk,
-            brokenBlock.x,
-            brokenBlock.y,
-            brokenBlock.z
-        )
-
-        val linkedItemDisplay = customBlocksService.linkedDisplayOf(brokenBlock) ?: return
-        linkedItemDisplay.remove()
+        customBlocksService.forceRemoveAt(brokenBlock)
     }
 }

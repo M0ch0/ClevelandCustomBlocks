@@ -23,4 +23,5 @@ gradlew, *.bat, .gitignore, .gitattributes, /gradle, *.md, LICENSE
 - ~~CodeQL~~ done
 - ~~Integrate with OpenAI Codex for automated PR review~~ done
 - ~~Auto Build~~ done
-- Use LLM to automate changelog creation
+- ~~Use LLM to automate changelog creation~~ done
+- ~~Auto Release~~ done

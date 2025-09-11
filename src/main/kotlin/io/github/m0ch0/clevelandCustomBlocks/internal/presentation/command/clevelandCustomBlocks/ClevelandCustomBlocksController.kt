@@ -6,7 +6,6 @@ import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.LoadCustomBlockDefinitionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.command.CommandSender
@@ -17,7 +16,6 @@ internal class ClevelandCustomBlocksController @Inject constructor(
     private val plugin: ClevelandCustomBlocks,
     private val logger: ComponentLogger,
     private val customBlocksService: ClevelandCustomBlocksService,
-    private val chunkIndexStore: ChunkIndexStore,
     private val loadCustomBlockDefinitionsUseCase: LoadCustomBlockDefinitionsUseCase,
     private val getCustomBlockDefinitionsUseCase: GetCustomBlockDefinitionByIdUseCase
 ) {
@@ -99,45 +97,26 @@ internal class ClevelandCustomBlocksController @Inject constructor(
 
     fun getChunkBlocks(player: Player) {
         val chunk = player.chunk
-        val blockRegistry = chunkIndexStore.list(chunk)
-        if (blockRegistry.isEmpty()) {
+        val locations = customBlocksService.listRegisteredPositions(chunk)
+        if (locations.isEmpty()) {
             player.sendMessage(Msg.Chunk.emptyRegistry())
             return
         }
 
-        var validBlockCount = 0
-        var invalidBlockCount = 0
-
-        for (registeredBlock in blockRegistry) {
-            val block = chunk.getBlock(
-                registeredBlock.x,
-                registeredBlock.y,
-                registeredBlock.z
-            )
-
-            if (block.type == CollisionBlock.material) {
-                validBlockCount += 1
-            } else {
-                invalidBlockCount += 1
-            }
+        var valid = 0
+        var invalid = 0
+        for (loc in locations) {
+            val block = loc.block
+            if (block.type == CollisionBlock.material) valid++ else invalid++
         }
-
-        player.sendMessage(Msg.Chunk.validSummary(validBlockCount))
-        player.sendMessage(Msg.Chunk.invalidSummary(invalidBlockCount))
+        player.sendMessage(Msg.Chunk.validSummary(valid))
+        player.sendMessage(Msg.Chunk.invalidSummary(invalid))
     }
 
     fun cleanupChunkBlocks(player: Player) {
         val chunk = player.chunk
-        val blockRegistry = chunkIndexStore.list(chunk)
-
-        for (registeredBlock in blockRegistry) {
-            val block = chunk.getBlock(
-                registeredBlock.x,
-                registeredBlock.y,
-                registeredBlock.z
-            )
-            customBlocksService.forceRemoveAt(block)
-        }
-        player.sendMessage(Msg.Chunk.cleanup(blockRegistry.size))
+        val locations = customBlocksService.listRegisteredPositions(chunk)
+        for (loc in locations) customBlocksService.forceRemoveAt(loc.block)
+        player.sendMessage(Msg.Chunk.cleanup(locations.size))
     }
 }
