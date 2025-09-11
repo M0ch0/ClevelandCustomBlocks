@@ -86,6 +86,19 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
         chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
     }
 
+    override fun forceRemoveBy(itemDisplay: ItemDisplay) {
+        val linkedCollisionBlock = linkedBlockOf(itemDisplay) ?: return
+
+        linkedCollisionBlock.type = Material.AIR
+
+        chunkIndexStore.remove(
+            linkedCollisionBlock.chunk,
+            linkedCollisionBlock.x,
+            linkedCollisionBlock.y,
+            linkedCollisionBlock.z
+        )
+    }
+
     override fun linkedDisplayOf(block: Block): ItemDisplay? = linkFinder.findItemDisplayByBlock(block)
 
     override fun linkedBlockOf(display: ItemDisplay): Block? = linkFinder.findBlockByItemDisplay(display)
