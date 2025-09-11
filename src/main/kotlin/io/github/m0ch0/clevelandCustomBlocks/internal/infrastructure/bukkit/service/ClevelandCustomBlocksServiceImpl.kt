@@ -3,6 +3,9 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.ser
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.ChunkIndexStore
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockLinkFinder
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockPlacementAdaptor
 import net.kyori.adventure.text.Component
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -20,7 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
-    private val placement: CustomBlockPlacementService,
+    private val placement: CustomBlockPlacementAdaptor,
     private val linkFinder: CustomBlockLinkFinder,
     private val chunkIndexStore: ChunkIndexStore,
     private val getCustomBlockDefinitionById: GetCustomBlockDefinitionByIdUseCase,

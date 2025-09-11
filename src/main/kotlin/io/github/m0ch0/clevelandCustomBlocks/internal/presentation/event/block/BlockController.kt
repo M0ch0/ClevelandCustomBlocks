@@ -1,7 +1,6 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.block
 
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player

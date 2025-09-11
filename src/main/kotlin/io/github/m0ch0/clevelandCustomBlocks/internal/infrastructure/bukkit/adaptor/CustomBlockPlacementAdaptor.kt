@@ -1,4 +1,4 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor
 
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.Orientation
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
@@ -23,7 +23,7 @@ import kotlin.math.PI
 import kotlin.math.round
 
 @Singleton
-internal class CustomBlockPlacementService @Inject constructor(
+internal class CustomBlockPlacementAdaptor @Inject constructor(
     private val chunkIndexStore: ChunkIndexStore,
     private val getCustomBlockById: GetCustomBlockDefinitionByIdUseCase,
     @Named("link_world_uuid_key") private val linkWorldUuidKey: NamespacedKey,

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
+@Suppress("TooManyFunctions") // It's a public service so there's no problem.
 interface ClevelandCustomBlocksService {
 
     fun createItem(id: String, amount: Int = 1): ItemStack?

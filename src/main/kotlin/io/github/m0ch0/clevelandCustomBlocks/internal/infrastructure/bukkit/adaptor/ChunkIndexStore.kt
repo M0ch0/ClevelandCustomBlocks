@@ -1,4 +1,4 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor
 
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.PackedRelativePos
 import org.bukkit.Chunk

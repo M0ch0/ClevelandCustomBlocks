@@ -2,9 +2,7 @@ package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.world
 
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ChunkIndexStore
 import org.bukkit.Chunk
-import org.bukkit.Material
 import org.bukkit.entity.ItemDisplay
 import javax.inject.Inject
 
