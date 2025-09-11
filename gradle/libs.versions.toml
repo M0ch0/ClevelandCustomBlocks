@@ -6,7 +6,7 @@ run-paper = "2.3.1"
 detekt = "1.23.8"
 kotlinx-coroutines = "1.10.2"
 
-paper-api = "1.21.8-R0.1-SNAPSHOT"
+paper-api = "1.21.4-R0.1-SNAPSHOT"
 paperweight-userdev = "2.0.0-SNAPSHOT"
 acf = "0.5.1-SNAPSHOT"
 dagger = "2.57"
