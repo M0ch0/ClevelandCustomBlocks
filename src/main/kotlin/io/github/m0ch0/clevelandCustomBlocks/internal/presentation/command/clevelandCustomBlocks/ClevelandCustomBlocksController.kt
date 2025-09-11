@@ -1,23 +1,26 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.command.clevelandCustomBlocks
 
 import com.github.shynixn.mccoroutine.bukkit.launch
-import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.CreateBaseCustomItemUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ForceRemoveCustomBlockAtUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ListRegisteredPositionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.LoadCustomBlockDefinitionsUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import javax.inject.Inject
 
 internal class ClevelandCustomBlocksController @Inject constructor(
     private val plugin: ClevelandCustomBlocks,
     private val logger: ComponentLogger,
-    private val customBlocksService: ClevelandCustomBlocksService,
     private val loadCustomBlockDefinitionsUseCase: LoadCustomBlockDefinitionsUseCase,
-    private val getCustomBlockDefinitionsUseCase: GetCustomBlockDefinitionByIdUseCase
+    private val getBaseCustomItemUseCase: CreateBaseCustomItemUseCase,
+    private val listRegisteredPositionsUseCase: ListRegisteredPositionsUseCase,
+    private val forceRemoveCustomBlockAtUseCase: ForceRemoveCustomBlockAtUseCase
 ) {
 
     fun reload(sender: CommandSender) {
@@ -70,15 +73,13 @@ internal class ClevelandCustomBlocksController @Inject constructor(
             sender.sendMessage(Msg.Common.playerNotFound(target))
         }
 
-        if (getCustomBlockDefinitionsUseCase(itemId) !is GetCustomBlockDefinitionByIdUseCase.Result.Success) {
-            sender.sendMessage(Msg.Give.definitionNotFound(itemId))
-            return
+        val baseItem: ItemStack = when (val result = getBaseCustomItemUseCase(itemId)) {
+            CreateBaseCustomItemUseCase.Result.Failure.DefinitionNotFound
+                -> return targetPlayer.sendMessage(Msg.Give.definitionNotFound(itemId))
+            CreateBaseCustomItemUseCase.Result.Failure.InvalidMaterial
+                -> return targetPlayer.sendMessage(Msg.Give.invalidMaterial(itemId))
+            is CreateBaseCustomItemUseCase.Result.Success -> result.item
         }
-
-        // Someday createBaseItem will have a Result
-
-        val baseItem = customBlocksService.createBaseItem(itemId)
-            ?: return sender.sendMessage(Msg.Give.invalidDefinition(itemId))
 
         val maxPerStack = baseItem.maxStackSize
 
@@ -97,7 +98,7 @@ internal class ClevelandCustomBlocksController @Inject constructor(
 
     fun getChunkBlocks(player: Player) {
         val chunk = player.chunk
-        val locations = customBlocksService.listRegisteredPositions(chunk)
+        val locations = listRegisteredPositionsUseCase(chunk)
         if (locations.isEmpty()) {
             player.sendMessage(Msg.Chunk.emptyRegistry())
             return
@@ -115,8 +116,8 @@ internal class ClevelandCustomBlocksController @Inject constructor(
 
     fun cleanupChunkBlocks(player: Player) {
         val chunk = player.chunk
-        val locations = customBlocksService.listRegisteredPositions(chunk)
-        for (loc in locations) customBlocksService.forceRemoveAt(loc.block)
+        val locations = listRegisteredPositionsUseCase(chunk)
+        for (loc in locations) forceRemoveCustomBlockAtUseCase(loc.block)
         player.sendMessage(Msg.Chunk.cleanup(locations.size))
     }
 }

@@ -1,6 +1,7 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter
 
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.LinkQueryPort
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -13,21 +14,21 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-internal class CustomBlockLinkFinder @Inject constructor(
+internal class LinkQueryAdapter @Inject constructor(
     @Named("link_world_uuid_key") private val linkWorldUuidKey: NamespacedKey,
     @Named("link_block_xyz_key") private val linkBlockXYZKey: NamespacedKey,
     private val plugin: ClevelandCustomBlocks // it may be better to provide a server instead of a plugin.
-) {
+) : LinkQueryPort {
 
     /*
     Ideally, this should depend on the domain.repository interface, so Bukkit API objects
     shouldn't appear in the parameters. However, we're compromising here because doing otherwise
     would be verbose and re-fetching is costly (admittedly, this deviates from the principle of least privilege).
     Since this code aims to improve performance by being Bukkit-native without relying on an external DB,
-    it's acceptable to pay development cost in exchange for performance.
+    it's acceptable to pay development cost in exchange for performance. So I invented an excuse called application.port
      */
 
-    fun findItemDisplayByBlock(block: Block): ItemDisplay? {
+    override fun linkedDisplayOf(block: Block): ItemDisplay? {
         val world = block.world
         val x = block.x
         val y = block.y
@@ -55,7 +56,7 @@ internal class CustomBlockLinkFinder @Inject constructor(
             }
     }
 
-    fun findBlockByItemDisplay(itemDisplay: ItemDisplay): Block? {
+    override fun linkedBlockOf(itemDisplay: ItemDisplay): Block? {
         val worldUuidStr = itemDisplay.persistentDataContainer
             .get(linkWorldUuidKey, PersistentDataType.STRING) ?: return null
 

@@ -4,12 +4,20 @@ import dagger.Module
 import dagger.Provides
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.ActionRunnerPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.BreakProtectionPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.ChunkIndexPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.InteractProtectionPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.LinkQueryPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.PlacementPort
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.repository.CustomBlocksRepository
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter.ActionRunnerAdapter
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter.ChunkIndexAdapter
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter.LinkQueryAdapter
+import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter.PlacementAdapter
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ClevelandCustomBlocksServiceImpl
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.dao.DefinitionYamlDao
 import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.repository.YamlCustomBlocksRepository
-import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
-import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.InteractProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.NoopBreakProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.NoopInteractProtection
 import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.WorldGuardBreakProtection
@@ -20,6 +28,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
+@Suppress("TooManyFunctions")
 internal object PluginModule {
 
     @Provides
@@ -67,7 +76,7 @@ internal object PluginModule {
 
     @Provides
     @Singleton
-    fun provideBreakProtection(plugin: ClevelandCustomBlocks): BreakProtection {
+    fun provideBreakProtection(plugin: ClevelandCustomBlocks): BreakProtectionPort {
         val pluginManager = plugin.server.pluginManager
         val hasWG = pluginManager.getPlugin("WorldGuard") != null
         return if (hasWG) WorldGuardBreakProtection() else NoopBreakProtection()
@@ -75,9 +84,21 @@ internal object PluginModule {
 
     @Provides
     @Singleton
-    fun provideInteractProtection(plugin: ClevelandCustomBlocks): InteractProtection {
+    fun provideInteractProtection(plugin: ClevelandCustomBlocks): InteractProtectionPort {
         val pluginManager = plugin.server.pluginManager
         val hasWG = pluginManager.getPlugin("WorldGuard") != null
         return if (hasWG) WorldGuardInteractProtection() else NoopInteractProtection()
     }
+
+    @Provides @Singleton
+    fun provideActionRunnerPort(adapter: ActionRunnerAdapter): ActionRunnerPort = adapter
+
+    @Provides @Singleton
+    fun provideLinkQueryPort(adapter: LinkQueryAdapter): LinkQueryPort = adapter
+
+    @Provides @Singleton
+    fun providePlacementPort(adapter: PlacementAdapter): PlacementPort = adapter
+
+    @Provides @Singleton
+    fun provideChunkIndexPort(adapter: ChunkIndexAdapter): ChunkIndexPort = adapter
 }

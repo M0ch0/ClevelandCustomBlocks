@@ -1,58 +1,48 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.presentation.event.player
 
-import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service.ActionRunner
-import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.BreakProtection
-import io.github.m0ch0.clevelandCustomBlocks.internal.integration.worldguard.InteractProtection
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.CanBreakUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.CanInteractUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.InteractCustomBlockUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.RemoveCustomBlockAtUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.presentation.i18n.Msg
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.bukkit.GameMode
 import org.bukkit.block.Block
-import org.bukkit.command.CommandException
 import org.bukkit.entity.Player
 import javax.inject.Inject
 
 internal class PlayerController @Inject constructor(
     private val logger: ComponentLogger,
-    private val customBlocksService: ClevelandCustomBlocksService,
-    private val actionRunner: ActionRunner,
-    private val breakProtection: BreakProtection,
-    private val interactProtection: InteractProtection,
-    private val getCustomBlockDefinitionByIdUseCase: GetCustomBlockDefinitionByIdUseCase
+    private val canBreakUseCase: CanBreakUseCase,
+    private val canInteractUseCase: CanInteractUseCase,
+    private val interactCustomBlock: InteractCustomBlockUseCase,
+    private val removeCustomBlockAt: RemoveCustomBlockAtUseCase
 ) {
 
     fun onBarrierLeftClick(player: Player, clickedBlock: Block) {
-        if (runCatching { breakProtection.canBreak(player, clickedBlock) }.getOrNull() != true) return
-
-        if (player.gameMode == GameMode.CREATIVE) {
-            customBlocksService.removeAt(clickedBlock, false)
-        } else {
-            customBlocksService.removeAt(clickedBlock, true)
+        if (canBreakUseCase(player, clickedBlock).not()) return
+        val drop = player.gameMode != GameMode.CREATIVE
+        when (removeCustomBlockAt(clickedBlock, drop)) {
+            RemoveCustomBlockAtUseCase.Result.Success -> Unit
+            RemoveCustomBlockAtUseCase.Result.Failure.NotCustomCollision -> Unit
+            RemoveCustomBlockAtUseCase.Result.Failure.LinkMissing -> Unit
         }
     }
 
     fun onBarrierRightClick(player: Player, clickedBlock: Block) {
-        if (runCatching { interactProtection.canInteract(player, clickedBlock) }.getOrNull() != true) return
+        if (canInteractUseCase(player, clickedBlock).not()) return
+        when (val result = interactCustomBlock(player, clickedBlock)) {
+            InteractCustomBlockUseCase.Result.Ran,
+            InteractCustomBlockUseCase.Result.NoAction,
+            InteractCustomBlockUseCase.Result.Skipped -> Unit
 
-        val display = customBlocksService.linkedDisplayOf(clickedBlock) ?: return
-        val id = customBlocksService.customIdOf(display.itemStack) ?: return
-
-        when (val result = getCustomBlockDefinitionByIdUseCase(id)) {
-            is GetCustomBlockDefinitionByIdUseCase.Result.Success -> {
-                val actions = result.customBlock.actions
-                if (actions.isEmpty()) return
-                try {
-                    actionRunner.runAll(player, clickedBlock, actions)
-                } catch (exception: CommandException) {
-                    logger.error(exception.toString())
-                    player.sendMessage(Msg.Action.invalidCommand())
-                    if (player.isOp) player.sendMessage(Msg.Action.invalidCommandForOp())
-                }
+            is InteractCustomBlockUseCase.Result.Failure.CommandError -> {
+                logger.error(result.message)
+                player.sendMessage(Msg.Action.invalidCommand())
+                if (player.isOp) player.sendMessage(Msg.Action.invalidCommandForOp())
             }
-            is GetCustomBlockDefinitionByIdUseCase.Result.Failure.NotFound -> {
+            InteractCustomBlockUseCase.Result.Failure.DefinitionMissing ->
                 player.sendMessage(Msg.Action.invalidDefinition())
-            }
         }
     }
 }

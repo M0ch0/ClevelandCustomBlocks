@@ -1,5 +1,6 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter
 
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.ChunkIndexPort
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.PackedRelativePos
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -11,16 +12,16 @@ import javax.inject.Singleton
 
 @Singleton
 @Suppress("MagicNumber")
-internal class ChunkIndexStore @Inject constructor(
+internal class ChunkIndexAdapter @Inject constructor(
     @Named("chunk_block_index_key") private val chunkBlockIndexKey: NamespacedKey
-) {
+) : ChunkIndexPort {
 
     /*
     Ideally, this should depend on the domain.repository interface, so Bukkit API objects
     shouldn't appear in the parameters. However, we're compromising here because doing otherwise
     would be verbose and re-fetching is costly (admittedly, this deviates from the principle of least privilege).
     Since this code aims to improve performance by being Bukkit-native without relying on an external DB,
-    it's acceptable to pay development cost in exchange for performance.
+    it's acceptable to pay development cost in exchange for performance. So I invented an excuse called application.port
      */
 
     fun list(chunk: Chunk): MutableSet<PackedRelativePos> {
@@ -41,6 +42,14 @@ internal class ChunkIndexStore @Inject constructor(
         return positions
     }
 
+    override fun listRegisteredPositions(chunk: Chunk): Set<Location> {
+        val packed = list(chunk)
+        if (packed.isEmpty()) return emptySet()
+        return packed.mapTo(LinkedHashSet(packed.size)) { pos ->
+            relativeToWorldLocation(chunk, pos)
+        }
+    }
+
     fun add(chunk: Chunk, position: PackedRelativePos): Boolean {
         val positions = list(chunk)
         if (positions.add(position)) {
@@ -50,7 +59,7 @@ internal class ChunkIndexStore @Inject constructor(
         return false
     }
 
-    fun addIfMissing(chunk: Chunk, position: PackedRelativePos): Boolean {
+    override fun addIfMissing(chunk: Chunk, position: PackedRelativePos): Boolean {
         val positions = list(chunk)
         if (!positions.contains(position)) {
             positions.add(position)
@@ -74,12 +83,12 @@ internal class ChunkIndexStore @Inject constructor(
         return add(chunk, relative)
     }
 
-    fun addIfMissing(chunk: Chunk, worldX: Int, worldY: Int, worldZ: Int): Boolean {
+    override fun addIfMissing(chunk: Chunk, worldX: Int, worldY: Int, worldZ: Int): Boolean {
         val relative = worldToRelativePosition(worldX, worldY, worldZ, chunk) ?: return false
         return addIfMissing(chunk, relative)
     }
 
-    fun remove(chunk: Chunk, worldX: Int, worldY: Int, worldZ: Int): Boolean {
+    override fun remove(chunk: Chunk, worldX: Int, worldY: Int, worldZ: Int): Boolean {
         val relative = worldToRelativePosition(worldX, worldY, worldZ, chunk) ?: return false
         return remove(chunk, relative)
     }

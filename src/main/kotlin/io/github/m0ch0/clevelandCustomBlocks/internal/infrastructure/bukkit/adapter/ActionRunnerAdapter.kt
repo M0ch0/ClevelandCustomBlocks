@@ -1,6 +1,7 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter
 
 import io.github.m0ch0.clevelandCustomBlocks.internal.ClevelandCustomBlocks
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.ActionRunnerPort
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.CustomBlockAction
 import org.bukkit.block.Block
 import org.bukkit.command.CommandException
@@ -8,15 +9,14 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.jvm.Throws
 
 @Singleton
-internal class ActionRunner @Inject constructor(
+internal class ActionRunnerAdapter @Inject constructor(
     private val plugin: ClevelandCustomBlocks
-) {
+) : ActionRunnerPort {
 
     @Throws(CommandException::class)
-    fun runAll(clicker: Player, clickedBlock: Block, actions: List<CustomBlockAction>) {
+    override fun runAll(clicker: Player, clickedBlock: Block, actions: List<CustomBlockAction>) {
         for (action in actions) {
             val command = substitute(action.command, clicker, clickedBlock)
             val normalized = normalize(command)

@@ -1,15 +1,16 @@
 package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.service
 
 import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
-import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.ChunkIndexStore
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockLinkFinder
-import io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor.CustomBlockPlacementAdaptor
-import net.kyori.adventure.text.Component
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.CreateBaseCustomItemUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.FindLinkedBlockUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.FindLinkedItemDisplayUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ForceRemoveByItemDisplayUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ForceRemoveCustomBlockAtUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ListRegisteredPositionsUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.PlaceCustomBlockFromItemUseCase
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.RemoveCustomBlockAtUseCase
 import org.bukkit.Chunk
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
 import org.bukkit.entity.ItemDisplay
@@ -23,31 +24,22 @@ import javax.inject.Singleton
 
 @Singleton
 internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
-    private val placement: CustomBlockPlacementAdaptor,
-    private val linkFinder: CustomBlockLinkFinder,
-    private val chunkIndexStore: ChunkIndexStore,
-    private val getCustomBlockDefinitionById: GetCustomBlockDefinitionByIdUseCase,
+    private val createBaseCustomItemUseCase: CreateBaseCustomItemUseCase,
+    private val placeCustomBlockFromItemUseCase: PlaceCustomBlockFromItemUseCase,
+    private val removeCustomBlockAtUseCase: RemoveCustomBlockAtUseCase,
+    private val forceRemoveCustomBlockAtUseCase: ForceRemoveCustomBlockAtUseCase,
+    private val forceRemoveByItemDisplayUseCase: ForceRemoveByItemDisplayUseCase,
+    private val findLinkedItemDisplayUseCase: FindLinkedItemDisplayUseCase,
+    private val findLinkedBlockUseCase: FindLinkedBlockUseCase,
+    private val listRegisteredPositionsUseCase: ListRegisteredPositionsUseCase,
     @Named("custom_block_id_key") private val customBlockIdKey: NamespacedKey
 ) : ClevelandCustomBlocksService {
 
-    @Suppress("UnstableApiUsage", "ReturnCount")
     override fun createBaseItem(id: String): ItemStack? {
-        val result = getCustomBlockDefinitionById(id)
-        val definition = (result as? GetCustomBlockDefinitionByIdUseCase.Result.Success)?.customBlock ?: return null
-
-        val material = Material.getMaterial(definition.originalBlock) ?: return null
-        return ItemStack(material, 1).also { stack ->
-            stack.editMeta { meta ->
-                meta.itemName(Component.text(definition.displayName))
-                val cmd = meta.customModelDataComponent
-                cmd.strings = listOf(definition.id)
-                meta.setCustomModelDataComponent(cmd)
-                meta.persistentDataContainer.set(
-                    customBlockIdKey,
-                    PersistentDataType.STRING,
-                    definition.id
-                )
-            }
+        return when (val result = createBaseCustomItemUseCase(id)) {
+            CreateBaseCustomItemUseCase.Result.Failure.DefinitionNotFound -> null
+            CreateBaseCustomItemUseCase.Result.Failure.InvalidMaterial -> null
+            is CreateBaseCustomItemUseCase.Result.Success -> result.item
         }
     }
 
@@ -68,49 +60,29 @@ internal class ClevelandCustomBlocksServiceImpl @Inject constructor(
         target: Location,
         itemInHand: ItemStack
     ): Boolean {
-        val id = customIdOf(itemInHand) ?: return false
-        return placement.place(player, hand, target, itemInHand, id)
+        customIdOf(itemInHand) ?: return false
+        return when (placeCustomBlockFromItemUseCase(player, hand, target, itemInHand)) {
+            PlaceCustomBlockFromItemUseCase.Result.Failure.NotCustomItem -> false
+            PlaceCustomBlockFromItemUseCase.Result.Failure.PlacementRejected -> false
+            PlaceCustomBlockFromItemUseCase.Result.Success -> true
+        }
     }
 
     override fun removeAt(block: Block, dropItem: Boolean): Boolean {
-        val linked = linkFinder.findItemDisplayByBlock(block) ?: return false
-
-        if (dropItem) block.world.dropItem(block.location, linked.itemStack)
-
-        if (block.type == CollisionBlock.material) block.type = Material.AIR
-
-        linked.remove()
-        return chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
-    }
-
-    override fun forceRemoveAt(block: Block) {
-        linkFinder.findItemDisplayByBlock(block)?.remove()
-        if (block.type == CollisionBlock.material) block.type = Material.AIR
-        chunkIndexStore.remove(block.chunk, block.x, block.y, block.z)
-    }
-
-    override fun forceRemoveBy(itemDisplay: ItemDisplay) {
-        val linkedCollisionBlock = linkedBlockOf(itemDisplay) ?: return
-
-        linkedCollisionBlock.type = Material.AIR
-
-        chunkIndexStore.remove(
-            linkedCollisionBlock.chunk,
-            linkedCollisionBlock.x,
-            linkedCollisionBlock.y,
-            linkedCollisionBlock.z
-        )
-    }
-
-    override fun linkedDisplayOf(block: Block): ItemDisplay? = linkFinder.findItemDisplayByBlock(block)
-
-    override fun linkedBlockOf(display: ItemDisplay): Block? = linkFinder.findBlockByItemDisplay(display)
-
-    override fun listRegisteredPositions(chunk: Chunk): Set<Location> {
-        val packed = chunkIndexStore.list(chunk)
-        if (packed.isEmpty()) return emptySet()
-        return packed.mapTo(LinkedHashSet(packed.size)) { pos ->
-            ChunkIndexStore.relativeToWorldLocation(chunk, pos)
+        return when (removeCustomBlockAtUseCase(block, dropItem)) {
+            RemoveCustomBlockAtUseCase.Result.Failure.LinkMissing -> false
+            RemoveCustomBlockAtUseCase.Result.Failure.NotCustomCollision -> false
+            RemoveCustomBlockAtUseCase.Result.Success -> true
         }
     }
+
+    override fun forceRemoveAt(block: Block) = forceRemoveCustomBlockAtUseCase(block)
+
+    override fun forceRemoveBy(itemDisplay: ItemDisplay) = forceRemoveByItemDisplayUseCase(itemDisplay)
+
+    override fun linkedDisplayOf(block: Block): ItemDisplay? = findLinkedItemDisplayUseCase(block)
+
+    override fun linkedBlockOf(display: ItemDisplay): Block? = findLinkedBlockUseCase(display)
+
+    override fun listRegisteredPositions(chunk: Chunk): Set<Location> = listRegisteredPositionsUseCase(chunk)
 }

@@ -6,13 +6,13 @@ import com.sk89q.worldedit.extent.Extent
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.World
 import com.sk89q.worldedit.world.block.BlockStateHolder
-import io.github.m0ch0.clevelandCustomBlocks.api.service.ClevelandCustomBlocksService
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.usecase.ForceRemoveCustomBlockAtUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
 import org.bukkit.Bukkit
 import javax.inject.Inject
 
 internal class WorldEditController @Inject constructor(
-    private val customBlocksService: ClevelandCustomBlocksService
+    private val forceRemoveCustomBlockAtUseCase: ForceRemoveCustomBlockAtUseCase
 ) {
 
     fun onEditSessionBeforeReorder(worldEditWorld: World, previousExtent: Extent): Extent {
@@ -24,7 +24,7 @@ internal class WorldEditController @Inject constructor(
                 if (Bukkit.isPrimaryThread()) {
                     val current = bukkitWorld.getBlockAt(location.x(), location.y(), location.z())
                     if (current.type == CollisionBlock.material) {
-                        customBlocksService.forceRemoveAt(current)
+                        forceRemoveCustomBlockAtUseCase(current)
                     }
                 }
 

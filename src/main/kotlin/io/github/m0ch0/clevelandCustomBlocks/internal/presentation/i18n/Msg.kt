@@ -40,6 +40,9 @@ internal object Msg {
         fun invalidDefinition(itemId: String) =
             Component.translatable(MsgKey.Give.INVALID_DEFINITION, Component.text(itemId))
 
+        fun invalidMaterial(itemId: String) =
+            Component.translatable(MsgKey.Give.INVALID_MATERIAL, Component.text(itemId))
+
         fun gave(target: String, itemId: String, amount: Int) =
             Component.translatable(
                 MsgKey.Give.GAVE,

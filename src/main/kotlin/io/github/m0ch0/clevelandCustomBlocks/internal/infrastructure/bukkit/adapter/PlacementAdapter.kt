@@ -1,5 +1,7 @@
-package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adaptor
+package io.github.m0ch0.clevelandCustomBlocks.internal.infrastructure.bukkit.adapter
 
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.ChunkIndexPort
+import io.github.m0ch0.clevelandCustomBlocks.internal.application.port.PlacementPort
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.entity.Orientation
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.usecase.GetCustomBlockDefinitionByIdUseCase
 import io.github.m0ch0.clevelandCustomBlocks.internal.domain.vo.CollisionBlock
@@ -23,14 +25,14 @@ import kotlin.math.PI
 import kotlin.math.round
 
 @Singleton
-internal class CustomBlockPlacementAdaptor @Inject constructor(
-    private val chunkIndexStore: ChunkIndexStore,
+internal class PlacementAdapter @Inject constructor(
+    private val chunkIndexAdapter: ChunkIndexPort,
     private val getCustomBlockById: GetCustomBlockDefinitionByIdUseCase,
     @Named("link_world_uuid_key") private val linkWorldUuidKey: NamespacedKey,
     @Named("link_block_xyz_key") private val linkBlockXYZKey: NamespacedKey,
-) {
+) : PlacementPort {
 
-    fun place(
+    override fun place(
         player: Player,
         hand: EquipmentSlot,
         targetLocation: Location,
@@ -47,7 +49,7 @@ internal class CustomBlockPlacementAdaptor @Inject constructor(
 
         val location = targetLocation.toBlockLocation()
 
-        chunkIndexStore.addIfMissing(
+        chunkIndexAdapter.addIfMissing(
             location.chunk,
             location.blockX,
             location.blockY,
