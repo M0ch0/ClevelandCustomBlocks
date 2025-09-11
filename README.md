@@ -21,7 +21,7 @@ Artwork & media: © 2025 M0ch0. All rights reserved. Not covered by the AGPL.
 
 ### How to Configure
 
-See [wikipage: How-to-Configure-Resourcepack-and-define.)](https://github.com/M0ch0/ClevelandCustomBlocks/wiki/How-to-Configure-Resourcepack-and-define)
+See [wikipage: How-to-Configure-Resourcepack-and-define.](https://github.com/M0ch0/ClevelandCustomBlocks/wiki/How-to-Configure-Resourcepack-and-define)
 
 ### How to Use
 
@@ -74,7 +74,7 @@ See [wikipage: How-to-Configure-Resourcepack-and-define.)](https://github.com/M0
 
 ## For Advanced User
 
-See [wikipage: For Advanced User Tips)](https://github.com/M0ch0/ClevelandCustomBlocks/wiki/For-Advanced-User-Tips)
+See [wikipage: For Advanced User Tips](https://github.com/M0ch0/ClevelandCustomBlocks/wiki/For-Advanced-User-Tips)
 
 
 ## Development
