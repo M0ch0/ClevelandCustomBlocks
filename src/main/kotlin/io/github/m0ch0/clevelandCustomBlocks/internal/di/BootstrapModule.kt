@@ -5,6 +5,8 @@ import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.AdventureI18nBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.CommandCompletionBootstrap
+import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.CommandRegisterBootstrap
+import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.EventListenerRegisterBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.PublicApiBootstrap
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.ShutdownTask
 import io.github.m0ch0.clevelandCustomBlocks.internal.di.bootstrap.StartupTask
@@ -38,4 +40,10 @@ internal object BootstrapModule {
 
     @Provides @IntoSet
     fun provideWorldEditShutdown(bootstrap: WorldEditIntegrationBootstrap): ShutdownTask = bootstrap
+
+    @Provides @IntoSet
+    fun provideEventListenerRegisterStartup(bootstrap: EventListenerRegisterBootstrap): StartupTask = bootstrap
+
+    @Provides @IntoSet
+    fun provideCommandRegisterStartup(bootstrap: CommandRegisterBootstrap): StartupTask = bootstrap
 }
