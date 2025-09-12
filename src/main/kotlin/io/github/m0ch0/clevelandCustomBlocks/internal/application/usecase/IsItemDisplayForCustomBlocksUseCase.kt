@@ -9,5 +9,6 @@ internal class IsItemDisplayForCustomBlocksUseCase @Inject constructor(
     @Named("custom_block_id_key") private val customBlockIdKey: NamespacedKey
 ) {
 
-    operator fun invoke(itemDisplay: ItemDisplay): Boolean = itemDisplay.persistentDataContainer.has(customBlockIdKey)
+    operator fun invoke(itemDisplay: ItemDisplay): Boolean
+    = itemDisplay.itemStack.itemMeta.persistentDataContainer.has(customBlockIdKey)
 }
