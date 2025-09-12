@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.0.1] - 2025-09-12
+
+### Fixed
+- Fix incorrect PDC key check in `IsItemDisplayForCustomBlocksUseCase` (#9a22711)
+
+### Changed
+- Delegate event listener and command registration to Bootstrap components (#6d33a43)
+- Clean up internal comments and formatting (#eb73064, #af4bf60)
+
+### Internal
+- Bump project version in `gradle.properties` (#211247f, #c061200)
+- Add changelog entry for v1.0.0 (#1044e33)
+
 ## [v1.0.0] - 2025-09-11
 ### ⚠️ Breaking changes
 - Refactor internal architecture by removing god-class and restructuring core components (PR #3)
