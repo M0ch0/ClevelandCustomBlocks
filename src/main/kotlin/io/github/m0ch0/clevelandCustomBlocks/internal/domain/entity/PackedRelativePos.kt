@@ -10,7 +10,7 @@ value class PackedRelativePos private constructor(private val packed: Int) {
         const val Z_MIN = 0
         const val Z_MAX = 15
 
-        // / Origin correction for normalizing y（-64..319 を 0..383 に）
+        // / Origin correction for normalizing y（-64..319 to 0..383）
         const val Y_OFFSET = 64
         const val YN_MIN = 0
         const val YN_MAX = 383
