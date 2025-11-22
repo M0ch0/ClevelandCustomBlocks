@@ -25,6 +25,15 @@ def get_all_tags() -> List[str]:
     return [t for t in out.splitlines() if t]
 
 
+def tag_exists(tag: str) -> bool:
+    """Check if a tag exists in the local repository."""
+    try:
+        run(["git", "rev-parse", "-q", "--verify", f"refs/tags/{tag}"], check=True)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
 SEMVER_RE = re.compile(
     r'^(?:v)?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<rest>.*)?$'
 )
@@ -269,7 +278,9 @@ def main():
     prev_tag = args.prev_tag or previous_tag_for(args.new_tag, all_tags)
 
     # Build git range
-    rng = git_range_or_initial(prev_tag, args.new_tag)
+    # If the new tag hasn't been created yet, use HEAD as the end of the range
+    end_ref = args.new_tag if tag_exists(args.new_tag) else "HEAD"
+    rng = git_range_or_initial(prev_tag, end_ref)
 
     # Collect context
     commits = collect_commits(rng)

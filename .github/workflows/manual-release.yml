@@ -97,12 +97,6 @@ jobs:
             exit 1
           fi
 
-      - name: Create & push tag
-        run: |
-          set -euo pipefail
-          git tag -a "${NEW_TAG}" -m "Release ${NEW_TAG}"
-          git push origin "${NEW_TAG}"
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -131,6 +125,12 @@ jobs:
             git commit -m "chore(changelog): update for ${NEW_TAG}"
             git push origin "HEAD:${DEFAULT_BRANCH}"
           fi
+
+      - name: Create & push tag
+        run: |
+          set -euo pipefail
+          git tag -a "${NEW_TAG}" -m "Release ${NEW_TAG}"
+          git push origin "${NEW_TAG}"
 
       - name: Extract release notes for this version
         id: notes
